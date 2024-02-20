@@ -4,16 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cc3ff1aa-11b5-460c-b77a-5f7d7366ae19" name="Changes" comment="created django project">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/obranalysis/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obranalysis/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/obranalysis/settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="cc3ff1aa-11b5-460c-b77a-5f7d7366ae19" name="Changes" comment="created db" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -87,7 +89,7 @@
       <updated>1708155625409</updated>
       <workItem from="1708155674310" duration="812000" />
       <workItem from="1708161926231" duration="928000" />
-      <workItem from="1708419602844" duration="1982000" />
+      <workItem from="1708419602844" duration="2494000" />
     </task>
     <task id="LOCAL-00001" summary="created django project">
       <option name="closed" value="true" />
@@ -97,7 +99,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708161753225</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="created db">
+      <option name="closed" value="true" />
+      <created>1708423571489</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1708423571489</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,6 +138,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="created django project" />
-    <option name="LAST_COMMIT_MESSAGE" value="created django project" />
+    <MESSAGE value="created db" />
+    <option name="LAST_COMMIT_MESSAGE" value="created db" />
   </component>
 </project>
