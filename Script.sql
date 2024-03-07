@@ -15,7 +15,7 @@ CREATE TABLE Area_Table
 	area_id INTEGER PRIMARY KEY,
 	area_name TEXT,
 	township_name TEXT,
-	government_if INTEGER,
+	government_id INTEGER,
 	government_name TEXT
 );
 
