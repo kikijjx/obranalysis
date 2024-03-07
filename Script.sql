@@ -4,7 +4,7 @@ CREATE TABLE School_Kind_Table
 	school_kind_name TEXT
 );
 
-CREATE TABLE Schoole_Type_Table
+CREATE TABLE School_Type_Table
 (
 	school_type_id INTEGER PRIMARY KEY,
 	school_type_name TEXT
