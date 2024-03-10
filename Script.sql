@@ -39,13 +39,12 @@ CREATE TABLE School_Table
 	school_name TEXT,
 	school_kind_id INTEGER,
 	school_type_id INTEGER,
-    school_property_id INTEGER,
 	area_id INTEGER,
-	town_id INTEGER,
+	town_type_id INTEGER,
 	FOREIGN KEY (school_kind_id) REFERENCES Scool_Kind_Table (school_kind_id),
 	FOREIGN KEY (school_type_id) REFERENCES Scool_Type_Table (school_type_id),
 	FOREIGN KEY (area_id) REFERENCES Area_Table (area_id),
-	FOREIGN KEY (town_id) REFERENCES Town_Table (town_id)
+	FOREIGN KEY (town_type_id) REFERENCES Town_Table (town_type_id)
 );
 
 CREATE TABLE School_Student_Table
@@ -64,13 +63,12 @@ CREATE TABLE Subject_Form_Table
 	A_tasks_count INTEGER,
 	B_tasks_count INTEGER,
 	C_tasks_count INTEGER,
-	D_tasks_count INTEGER,
 	FOREIGN KEY (subject_id) REFERENCES Subject_Table (subject_id)
 );
 
 CREATE TABLE Result_Table
 (
-	result_id INTEGER PRIMARY KEY,
+	result_id TEXT PRIMARY KEY,
 	student_id TEXT,
 	subject_form_id INTEGER,
 	primary_score INTEGER,
@@ -84,7 +82,7 @@ CREATE TABLE Result_Table
 CREATE TABLE Task_Table
 (
 	task_id INTEGER PRIMARY KEY,
-	result_id INTEGER,
+	result_id TEXT,
 	answer TEXT,
 	FOREIGN KEY (result_id) REFERENCES Result_Table (result_id)
 );
