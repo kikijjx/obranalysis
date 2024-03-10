@@ -39,6 +39,7 @@ CREATE TABLE School_Table
 	school_name TEXT,
 	school_kind_id INTEGER,
 	school_type_id INTEGER,
+    school_property_id INTEGER,
 	area_id INTEGER,
 	town_id INTEGER,
 	FOREIGN KEY (school_kind_id) REFERENCES Scool_Kind_Table (school_kind_id),
