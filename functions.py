@@ -93,51 +93,52 @@ def get_student_answer(student_id, task_id):
         return result
 
 #Средние результаты по предметам и годам
-def get_average_subject_result():
+def get_average_subject_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute(
-            "SELECT st.subject_name, sft.year_of_exam, AVG(rt.score_100) AS average_results FROM Subject_Form_Table sft "
+            "SELECT st.subject_name, AVG(rt.score_100) AS average_results FROM Subject_Form_Table sft "
             "LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
             "INNER JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+            f"WHERE sft.year_of_exam = {year} "
             "GROUP BY sft.subject_form_id; ")
         result = cursor.fetchall()
         return result
 
 #Средние баллы ЕГЭ по школам отсортированы по убыванию баллов 100 бальной шкалы (без базовой математики)
-def get_average_school_result_100():
+def get_average_school_result_100(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute(
-            "SELECT st.school_CODE, st.school_name , AVG(rt.score_100) AS average_results_100, AVG(rt.result_5) AS average_results_5 FROM School_Table st "
+            "SELECT st.school_name , AVG(rt.score_100) AS average_results_100 FROM School_Table st "
             "LEFT JOIN School_Student_Table sst ON st.school_CODE = sst.school_code "
             "LEFT JOIN Result_Table rt ON sst.student_id  = rt.student_id "
             "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
             "LEFT JOIN Subject_Table st2 ON sft.subject_id = st2.subject_id "
-            "WHERE st2.subject_id != 22"
+            f"WHERE st2.subject_id != 22 AND sft.year_of_exam = {year} "
             "GROUP BY st.school_CODE "
             "ORDER BY average_results_100 DESC;")
         result = cursor.fetchall()
         return result
 
 #Средние баллы ЕГЭ по школам отсортированы по убыванию баллов 5 бальной шкалы (без базовой математики)
-def get_average_school_result_5():
+def get_average_school_result_5(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute(
-            "SELECT st.school_CODE, st.school_name , AVG(rt.score_100) AS average_results_100, AVG(rt.result_5) AS average_results_5 FROM School_Table st "
+            "SELECT st.school_name, AVG(rt.result_5) AS average_results_5 FROM School_Table st "
             "LEFT JOIN School_Student_Table sst ON st.school_CODE = sst.school_code "
             "LEFT JOIN Result_Table rt ON sst.student_id  = rt.student_id "
             "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
             "LEFT JOIN Subject_Table st2 ON sft.subject_id = st2.subject_id "
-            "WHERE st2.subject_id != 22 "
+            f"WHERE st2.subject_id != 22 AND sft.year_of_exam = {year} "
             "GROUP BY st.school_CODE "
             "ORDER BY average_results_5 DESC;")
         result = cursor.fetchall()
         return result
 
 #Средние баллы ЕГЭ по типам школ отсортированы по убыванию (без базовой математики)
-def get_average_school_kind_result():
+def get_average_school_kind_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("SELECT skt.school_kind_name, AVG(rt.score_100) AS average_score FROM School_Kind_Table skt "
@@ -146,14 +147,14 @@ def get_average_school_kind_result():
                        "LEFT JOIN Result_Table rt ON sst.student_id = rt.student_id "
                        "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
                        "LEFT JOIN Subject_Table st2 ON sft.subject_id = st2.subject_id "
-                       "WHERE st2.subject_id != 22 "
+                       f"WHERE st2.subject_id != 22 AND sft.year_of_exam = {year} "
                        "GROUP BY skt.school_kind_id "
                        "ORDER BY average_score DESC ")
         result = cursor.fetchall()
         return result
 
 #Средние баллы ЕГЭ по районам отсортированы по убыванию (без базовой математики)
-def get_average_area_result():
+def get_average_area_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("SELECT at2.area_name, AVG(rt.score_100) AS average_score FROM Area_Table at2 "
@@ -162,14 +163,14 @@ def get_average_area_result():
                        "LEFT JOIN Result_Table rt ON sst.student_id = rt.student_id "
                        "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
                        "LEFT JOIN Subject_Table st2 ON sft.subject_id = st2.subject_id "
-                       "WHERE st2.subject_id != 22 "
+                       f"WHERE st2.subject_id != 22 AND sft.year_of_exam = {year} "
                        "GROUP BY at2.area_id "
                        "ORDER BY average_score DESC ")
         result = cursor.fetchall()
         return result
 
 #Средние баллы ЕГЭ по предметам и школам
-def get_average_best_subject_school_result():
+def get_average_best_subject_school_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("WITH AvgScores AS ("
@@ -178,6 +179,7 @@ def get_average_best_subject_school_result():
                        "    LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
                        "    LEFT JOIN School_Student_Table sst ON rt.student_id = sst.student_id "
                        "    LEFT JOIN School_Table st2 ON sst.school_code = st2.school_CODE "
+                       f"    WHERE sft.year_of_exam = {year} "
                        "    GROUP BY st.subject_name, st2.school_CODE)"
                        "SELECT subject_name, school_name, max_average_score "
                        "FROM ("
@@ -188,3 +190,5 @@ def get_average_best_subject_school_result():
                        "ORDER BY subject_name;")
         result = cursor.fetchall()
         return result
+
+print(get_average_best_subject_school_result(2018))
