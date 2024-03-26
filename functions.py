@@ -97,7 +97,7 @@ def get_average_subject_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute(
-            "SELECT st.subject_name, AVG(rt.score_100) AS average_results FROM Subject_Form_Table sft "
+            "SELECT st.subject_id, st.subject_name, AVG(rt.score_100) AS average_results FROM Subject_Form_Table sft "
             "LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
             "INNER JOIN Subject_Table st ON sft.subject_id = st.subject_id "
             f"WHERE sft.year_of_exam = {year} "
@@ -126,7 +126,7 @@ def get_average_school_result_5(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute(
-            "SELECT st.school_name, AVG(rt.result_5) AS average_results_5 FROM School_Table st "
+            "SELECT st.school_CODE, st.school_name, AVG(rt.result_5) AS average_results_5 FROM School_Table st "
             "LEFT JOIN School_Student_Table sst ON st.school_CODE = sst.school_code "
             "LEFT JOIN Result_Table rt ON sst.student_id  = rt.student_id "
             "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
@@ -174,21 +174,34 @@ def get_average_best_subject_school_result(year):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("WITH AvgScores AS ("
-                       "    SELECT st2.school_name, st.subject_name, AVG(rt.score_100) AS avg_score FROM Subject_Table st "
+                       "    SELECT st.subject_id, st2.school_name, st.subject_name, AVG(rt.score_100) AS avg_score FROM Subject_Table st "
                        "    LEFT JOIN Subject_Form_Table sft ON st.subject_id = sft.subject_id "
                        "    LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
                        "    LEFT JOIN School_Student_Table sst ON rt.student_id = sst.student_id "
                        "    LEFT JOIN School_Table st2 ON sst.school_code = st2.school_CODE "
                        f"    WHERE sft.year_of_exam = {year} "
                        "    GROUP BY st.subject_name, st2.school_CODE)"
-                       "SELECT subject_name, school_name, max_average_score "
+                       "SELECT subject_id, school_name, subject_name, max_average_score "
                        "FROM ("
-                       "    SELECT subject_name, school_name, max(avg_score) AS max_average_score "
+                       "    SELECT subject_id, school_name, subject_name, max(avg_score) AS max_average_score "
                        "    FROM AvgScores "
-                       "    GROUP BY subject_name "
+                       "    GROUP BY subject_name, subject_id "
                        ") AS max_scores "
-                       "ORDER BY subject_name;")
+                       "ORDER BY subject_id;")
         result = cursor.fetchall()
         return result
 
-print(get_average_best_subject_school_result(2018))
+#Средние % выполнения
+def get_average_subject_accuracy(year):
+    with sq3.connect('test.db') as con:
+        cursor = con.cursor()
+        cursor.execute(
+            "SELECT st.subject_id, st.subject_name, AVG(rt.accuracy) AS average_accuracy FROM Subject_Form_Table sft "
+            "LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
+            "INNER JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+            f"WHERE sft.year_of_exam = {year} "
+            "GROUP BY sft.subject_form_id; ")
+        result = cursor.fetchall()
+        return result
+
+print(get_average_subject_accuracy(2018))
