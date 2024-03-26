@@ -35,7 +35,7 @@ def main():
         print('Заполнил Subject_Form_Table для %s' % f)
         set_result(base, conn, year)
         print('Заполнил Result_Table для %s' % f)
-        set_table(base,conn,year)
+        set_task_table(base,conn,year)
         print('Заполнил Task_Table для %s' % f)
 
 
@@ -167,7 +167,7 @@ def set_result(base, conn, year):
     res.to_sql('Result_Table', conn, if_exists='append', index=False, method=None)
 
 
-def set_table(base, conn, year):
+def set_task_table(base, conn, year):
     df = base
     df['student_id'] = df['ID']
     df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
@@ -177,7 +177,7 @@ def set_table(base, conn, year):
     df['B_tasks_count'] = df['Оценка развернутых ответов'].str.len().div(4).astype('Int64')
     df['C_tasks_count'] = df['Оценка устных ответов'].str.len().div(4).astype('Int64')
 
-    df['B_tasks_count'] = df['C_tasks_count'].fillna(0)
+    df['B_tasks_count'] = df['B_tasks_count'].fillna(0)
     df['C_tasks_count'] = df['C_tasks_count'].fillna(0)
 
     def a_tasks_comp(df, tasks, result_id):
@@ -195,7 +195,7 @@ def set_table(base, conn, year):
             tasks.loc[len(tasks)] = a
 
     def b_tasks_comp(df, tasks, result_id):
-        if df.loc[df.index[i], 'B_tasks_count'] != 0:
+        if df.loc[df.index[i], 'B_tasks_count']:
             for j in range(df.loc[df.index[i], 'B_tasks_count']):
                 b = [f'B{j + 1}-{result_id}', result_id]
 
