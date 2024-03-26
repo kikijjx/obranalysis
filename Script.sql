@@ -81,7 +81,7 @@ CREATE TABLE Result_Table
 
 CREATE TABLE Task_Table
 (
-	task_id INTEGER PRIMARY KEY,
+	task_id TEXT PRIMARY KEY,
 	result_id TEXT,
 	answer TEXT,
 	FOREIGN KEY (result_id) REFERENCES Result_Table (result_id)

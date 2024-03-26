@@ -1,6 +1,8 @@
 import pandas as pd
 import sqlalchemy as sqla
 import pathlib
+from alive_progress import alive_bar # can be removed, added just for visualization
+import threading
 
 pd.options.mode.copy_on_write = True
 
@@ -33,6 +35,8 @@ def main():
         print('Заполнил Subject_Form_Table для %s' % f)
         set_result(base, conn, year)
         print('Заполнил Result_Table для %s' % f)
+        set_task_table(base,conn,year)
+        print('Заполнил Task_Table для %s' % f)
 
 
 def get_db_connection(folder):
@@ -161,6 +165,76 @@ def set_result(base, conn, year):
               'result_5']]
 
     res.to_sql('Result_Table', conn, if_exists='append', index=False, method=None)
+
+
+def set_task_table(base, conn, year):
+    df = base
+    df['student_id'] = df['ID']
+    df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
+    df['result_id'] = df['subject_form_id'] + '-' + df['ID']
+
+    df['A_tasks_count'] = df['Оценка кратких ответов'].str.len()
+    df['B_tasks_count'] = df['Оценка развернутых ответов'].str.len().div(4).astype('Int64')
+    df['C_tasks_count'] = df['Оценка устных ответов'].str.len().div(4).astype('Int64')
+
+    df['B_tasks_count'] = df['B_tasks_count'].fillna(0)
+    df['C_tasks_count'] = df['C_tasks_count'].fillna(0)
+
+    def a_tasks_comp(df, tasks, result_id):
+        for j in range(df.loc[df.index[i], 'A_tasks_count']):
+            a = [f'A{j + 1}-{result_id}', result_id]
+
+            grade = df.loc[df.index[i], 'Оценка кратких ответов'][j]
+            if grade == '+':
+                a.append(1)
+            elif grade == "-":
+                a.append(0)
+            else:
+                a.append(int(grade))
+
+            tasks.loc[len(tasks)] = a
+
+    def b_tasks_comp(df, tasks, result_id):
+        if df.loc[df.index[i], 'B_tasks_count']:
+            for j in range(df.loc[df.index[i], 'B_tasks_count']):
+                b = [f'B{j + 1}-{result_id}', result_id]
+
+                grade = df.loc[df.index[i], 'Оценка развернутых ответов'][j * 4]
+                b.append(int(grade))
+
+                tasks.loc[len(tasks)] = b
+
+    def c_tasks_comp(df, tasks, result_id):
+        if df.loc[df.index[i], 'C_tasks_count']:
+            for j in range(df.loc[df.index[i], 'C_tasks_count']):
+                c = [f'C{j + 1}-{result_id}', result_id]
+
+                grade = df.loc[df.index[i], 'Оценка устных ответов'][j * 4]
+                c.append(int(grade))
+
+                tasks.loc[len(tasks)] = c
+
+    with alive_bar(len(df)) as bar:
+        for i in range(len(df)):
+            tasks = pd.DataFrame(columns=['task_id', 'result_id', 'answer'])
+            result_id = df.loc[df.index[i], "result_id"]
+
+            thread_a = threading.Thread(target=a_tasks_comp(df, tasks, result_id))
+            thread_b = threading.Thread(target=b_tasks_comp(df, tasks, result_id))
+            thread_c = threading.Thread(target=c_tasks_comp(df, tasks, result_id))
+
+            thread_a.start()
+            thread_b.start()
+            thread_c.start()
+
+            thread_a.join()
+            thread_b.join()
+            thread_c.join()
+
+            bar()
+
+            tasks.to_sql('Task_Table', conn, if_exists='append', index=False, method=None)
+
 
 
 main()
