@@ -1,8 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import diagram_funcs
-import diagrams
-import functions
 import io
 import urllib, base64
 from django.shortcuts import render

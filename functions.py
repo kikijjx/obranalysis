@@ -204,4 +204,4 @@ def get_average_subject_accuracy(year):
         result = cursor.fetchall()
         return result
 
-print(get_average_subject_accuracy(2018))
+#print(get_average_subject_accuracy(2018))
