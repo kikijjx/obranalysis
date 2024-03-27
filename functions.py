@@ -205,3 +205,6 @@ def get_average_subject_accuracy(year):
         return result
 
 #print(get_average_subject_accuracy(2018))
+
+def get_actual_years():
+    return [2018, 2019, 2020, 2021, 2022]

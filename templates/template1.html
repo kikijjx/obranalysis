@@ -13,7 +13,10 @@
         {% endfor %}
     </div>
     <div id="checkbox-container-years">
-
+        {% for year in years_list %}
+            <label for="checkbox-year{{ year }}">{{ year }}:</label>
+            <input type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}" name="years">
+        {% endfor %}
     </div>
 
     <img id="graph-img" src="" alt="График">

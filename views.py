@@ -17,8 +17,9 @@ def main(request):
 def load_template(request):
     template_name = request.GET.get('template')
     subjects_list = functions.print_subject_table()
+    years_list = functions.get_actual_years()
     if template_name == 'template1':
-        return render(request, 'template1.html', {'subjects_list': subjects_list})
+        return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
         return render(request, 'template2.html')
     else:
