@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import functions
+import io
+import base64
 
 #Средние баллы по предметам
 
@@ -43,10 +45,10 @@ for i, value in enumerate(df_2022["Баллы"]):
     plt.text(df_2022["Индекс"][i] + 4*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
 
 plt.legend()
+plt.figure()
 
 #Лучшие баллы в школах по баллам
 
-plt.figure()
 df_2018 = pd.DataFrame(functions.get_average_best_subject_school_result(2018),columns=['Индекс','Школа','Предмет','Баллы'])
 df_2019 = pd.DataFrame(functions.get_average_best_subject_school_result(2019),columns=['Индекс','Школа','Предмет','Баллы'])
 df_2020 = pd.DataFrame(functions.get_average_best_subject_school_result(2020),columns=['Индекс','Школа','Предмет','Баллы'])
@@ -136,3 +138,6 @@ subject_name = input("Введите название предмета: ")
 
 # Отображение 5 круговых диаграмм с процентом выполнения по предмету на каждый из годов
 show_subject_performance(subject_name)
+
+
+
