@@ -13,29 +13,34 @@
     <div id="content"></div>
 
     <script>
-    $(document).ready(function() {
-        $('#templates-select').change(function() {
-            var selectedTemplate = $(this).val();
-            if (selectedTemplate) {
-                $.ajax({
-                    url: '/load_template/',
-                    data: {
-                        'template': selectedTemplate
-                    },
-                    dataType: 'html',
-                    success: function(data) {
-                        $('#content').html(data);
-                    },
-                    error: function() {
-                        alert('Ошибка при загрузке шаблона');
-                    }
-                });
-            } else {
-                $('#content').html('');
-            }
+        var graphData = "{{ graph_data }}";
+        $(document).ready(function() {
+            $('#templates-select').change(function() {
+                var selectedTemplate = $(this).val();
+                if (selectedTemplate) {
+                    $.ajax({
+                        url: '/load_template/',
+                        data: {
+                            'template': selectedTemplate
+                        },
+                        dataType: 'html',
+                        success: function(data) {
+                            $('#content').html(data);
+                            if (selectedTemplate === 'template1') {
+                                $('#graph-img').attr('src', 'data:image/png;base64,' + graphData);
+                            }
+                        },
+                        error: function() {
+                            alert('Ошибка при загрузке шаблона');
+                        }
+                    });
+                } else {
+                    $('#content').html('');
+                }
+            });
         });
-    });
     </script>
+
 </body>
 </html>
 
