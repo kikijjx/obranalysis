@@ -5,7 +5,9 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>template1afsfas</h1>
+    <h1>Средние баллы по предметам</h1>
+    <img id="graph-img" src="" alt="График">
+
     <div id="checkbox-container">
             {% for subject in subjects_list %}
             <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
@@ -19,7 +21,40 @@
         {% endfor %}
     </div>
 
-    <img id="graph-img" src="" alt="График">
+    <button id="update-graph">Применить</button>
 
+<script>
+$(document).ready(function() {
+    $('#update-graph').click(function() {
+        var selectedSubjects = [];
+        var selectedYears = [];
+
+        $('input[name="subjects"]:checked').each(function() {
+            selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
+        });
+
+        $('input[name="years"]:checked').each(function() {
+            selectedYears.push(parseInt($(this).val(), 10));
+        });
+
+        $.ajax({
+            url: '/update_graph/',
+            data: {
+                'subjects': selectedSubjects,
+                'years': selectedYears
+            },
+            dataType: 'json',
+            success: function(data) {
+                $('#graph-img').attr('src', 'data:image/png;base64,' + data.graph_data);
+            },
+            error: function() {
+                alert('Ошибка при построении графика, выберите другие данные');
+            }
+        });
+    });
+});
+</script>
 </body>
+
+
 </html>

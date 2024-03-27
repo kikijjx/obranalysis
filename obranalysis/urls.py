@@ -23,5 +23,6 @@ urlpatterns = [
     #path('admin/', admin.site.urls),
     path('', views.main, name='main'),
     path('load_template/', views.load_template, name='load_template'),
+    path('update_graph/', views.update_graph, name='update_graph'),
 
 ]

@@ -6,12 +6,14 @@ import urllib, base64
 from django.shortcuts import render
 from django.http import HttpResponse
 import matplotlib
+from django.http import JsonResponse
+
 import functions
 matplotlib.use('Agg')
 
 
 def main(request):
-    graph_data = diagram_funcs.graph_show([2018, 2019], [0, 1, 2, 3])
+    graph_data = diagram_funcs.graph_show([2018, 2019], [1, 2, 3])
     return render(request, 'main.html', {'graph_data': graph_data})
 
 def load_template(request):
@@ -24,3 +26,12 @@ def load_template(request):
         return render(request, 'template2.html')
     else:
         return render(request, 'sorry.html')
+
+def update_graph(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    print(selected_years)
+    print(selected_subjects)
+    graph_data = diagram_funcs.graph_show(selected_years, selected_subjects)
+
+    return JsonResponse({'graph_data': graph_data})
