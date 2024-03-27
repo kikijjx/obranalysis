@@ -22,4 +22,6 @@ import views
 urlpatterns = [
     #path('admin/', admin.site.urls),
     path('', views.main, name='main'),
+    path('load_template/', views.load_template, name='load_template'),
+
 ]

@@ -1,67 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>графики</title>
+    <title>Obranalysis</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+    <select id="templates-select">
+        <option value="">Выберите шаблон...</option>
+        <option value="template1">Шаблон 1</option>
+        <option value="template2">Шаблон 2</option>
+    </select>
+    <div id="content"></div>
 
-    <form method="get">
-        <label for="template">Шаблон:</label>
-        <select id="template" name="template">
-            <option value="">Выбрать шаблон...</option>
-            <option value="template1">Шаблон 1</option>
-            <option value="template2">Шаблон 2</option>
-            <option value="template3">Шаблон 3</option>
-        </select>
-        <br><br>
-        <div id="checkboxes">
-            <!-- для галочек -->
-        </div>
-        <br><br>
-
-
-        <input id="apply-button" type="submit" value="Применить">
-    </form>
-
-    <br><br>
-
-    <div id="chart">
-                    <img src="data:image/png;base64,{{ graph_data }}" alt="Graph">
-
-        <!-- для графика -->
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#checkboxes').hide();
-            $('#apply-button').hide();
-            $('#chart').hide();
-
-            $('#template').change(function() {
-                if ($(this).val() == '') {
-                    $('#checkboxes').hide();
-                    $('#apply-button').hide();
-                    $('#chart').hide();
-                } else {
-                    if ($(this).val() == 'template1') {
-                        $('#checkboxes').html('<input type="checkbox" id="checkbox1" name="checkbox1"><label for="checkbox1">1</label><br>');
-                    } else if ($(this).val() == 'template2') {
-                        $('#checkboxes').html('<input type="checkbox" id="checkbox2" name="checkbox3"><label for="checkbox3">2</label><br>');
-                    } else if ($(this).val() == 'template3') {
-                        $('#checkboxes').html('<input type="checkbox" id="checkbox3" name="checkbox5"><label for="checkbox5">3</label><br>');
+    $(document).ready(function() {
+        $('#templates-select').change(function() {
+            var selectedTemplate = $(this).val();
+            if (selectedTemplate) {
+                $.ajax({
+                    url: '/load_template/',
+                    data: {
+                        'template': selectedTemplate
+                    },
+                    dataType: 'html',
+                    success: function(data) {
+                        $('#content').html(data);
+                    },
+                    error: function() {
+                        alert('Ошибка при загрузке шаблона');
                     }
-                    $('#checkboxes').show();
-                    $('#apply-button').show();
-                }
-            });
-
-            $('form').submit(function(event) {
-                event.preventDefault();
-                $('#chart').show();
-            });
+                });
+            } else {
+                $('#content').html('');
+            }
         });
+    });
     </script>
 </body>
 </html>
+
+
+
+
