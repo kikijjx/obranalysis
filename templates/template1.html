@@ -6,6 +6,16 @@
 </head>
 <body>
     <h1>template1afsfas</h1>
+    <div id="checkbox-container">
+            {% for subject in subjects_list %}
+            <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
+            <input type="checkbox" id="checkbox{{ subject.0 }}" value="{{ subject.1 }}" name="subjects">
+        {% endfor %}
+    </div>
+    <div id="checkbox-container-years">
+
+    </div>
+
     <img id="graph-img" src="" alt="График">
 
 </body>

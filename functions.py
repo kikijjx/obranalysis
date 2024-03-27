@@ -39,7 +39,7 @@ def print_subject_table():
         cursor.execute("SELECT * FROM Subject_Table")
         result = cursor.fetchall()
         return result
-
+#print(print_subject_table())
 #Вывод всех данных из таблицы School_Table
 def print_school_table():
     with sq3.connect('test.db') as con:
