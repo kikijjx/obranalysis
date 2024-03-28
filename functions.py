@@ -41,13 +41,12 @@ def print_subject_table():
         return result
 #print(print_subject_table())
 #Вывод всех данных из таблицы School_Table
-def print_school_table():
+def get_school_table():
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("SELECT * FROM School_Table")
         result = cursor.fetchall()
         return result
-
 #Вывод всех данных из таблицы School_Student_Table
 def print_school_student_table():
     with sq3.connect('test.db') as con:
