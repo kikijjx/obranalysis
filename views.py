@@ -13,8 +13,9 @@ matplotlib.use('Agg')
 
 
 def main(request):
-    graph_data = diagram_funcs.graph_show([2018, 2019], [1, 2, 3])
-    return render(request, 'main.html', {'graph_data': graph_data})
+    graph_data = diagram_funcs.average_subject_result_show([2018, 2019], [1, 2, 3])
+    #return render(request, 'main.html', {'graph_data': graph_data})
+    return render(request, 'main.html')
 
 def load_template(request):
     template_name = request.GET.get('template')
@@ -23,15 +24,22 @@ def load_template(request):
     if template_name == 'template1':
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
-        return render(request, 'template2.html')
+        return render(request, 'template2.html', {'subjects_list': subjects_list, 'years_list': years_list})
     else:
         return render(request, 'sorry.html')
 
-def update_graph(request):
+def update_graph1(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     print(selected_years)
     print(selected_subjects)
-    graph_data = diagram_funcs.graph_show(selected_years, selected_subjects)
+    graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects)
+    return JsonResponse({'graph_data': graph_data})
 
+def update_graph2(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    print(selected_years)
+    print(selected_subjects)
+    graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects)
     return JsonResponse({'graph_data': graph_data})

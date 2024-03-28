@@ -5,6 +5,56 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>temp2</h1>
+    <h1>Школы с лучшим средним баллом по предметам</h1>
+    <img id="graph-img" src="" alt="График">
+
+    <div id="checkbox-container">
+            {% for subject in subjects_list %}
+            <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
+            <input type="checkbox" id="checkbox{{ subject.0 }}" value="{{ subject.1 }}" name="subjects">
+        {% endfor %}
+    </div>
+    <div id="checkbox-container-years">
+        {% for year in years_list %}
+            <label for="checkbox-year{{ year }}">{{ year }}:</label>
+            <input type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}" name="years">
+        {% endfor %}
+    </div>
+
+    <button id="update-graph">Применить</button>
+
+<script>
+$(document).ready(function() {
+    $('#update-graph').click(function() {
+        var selectedSubjects = [];
+        var selectedYears = [];
+
+        $('input[name="subjects"]:checked').each(function() {
+            selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
+        });
+
+        $('input[name="years"]:checked').each(function() {
+            selectedYears.push(parseInt($(this).val(), 10));
+        });
+
+        $.ajax({
+            url: '/update_graph2/',
+            data: {
+                'subjects': selectedSubjects,
+                'years': selectedYears
+            },
+            dataType: 'json',
+            success: function(data) {
+                $('#graph-img').attr('src', 'data:image/png;base64,' + data.graph_data);
+            },
+            error: function() {
+                alert('Ошибка при построении графика, выберите другие данные');
+            }
+        });
+    });
+});
+</script>
 </body>
+
+
 </html>

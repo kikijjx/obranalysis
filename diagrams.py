@@ -47,7 +47,7 @@ for i, value in enumerate(df_2022["Баллы"]):
 plt.legend()
 plt.figure()
 
-#Лучшие баллы в школах по баллам
+#Лучшие баллы в школах по предметам
 
 df_2018 = pd.DataFrame(functions.get_average_best_subject_school_result(2018),columns=['Индекс','Школа','Предмет','Баллы'])
 df_2019 = pd.DataFrame(functions.get_average_best_subject_school_result(2019),columns=['Индекс','Школа','Предмет','Баллы'])
