@@ -20,11 +20,12 @@ def main(request):
 def load_template(request):
     template_name = request.GET.get('template')
     subjects_list = functions.print_subject_table()
+    schools_list = functions.get_school_table()
     years_list = functions.get_actual_years()
     if template_name == 'template1':
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
-        return render(request, 'template2.html', {'subjects_list': subjects_list, 'years_list': years_list})
+        return render(request, 'template2.html', {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list})
     else:
         return render(request, 'sorry.html')
 
@@ -39,7 +40,9 @@ def update_graph1(request):
 def update_graph2(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    selected_schools = request.GET.getlist('schools[]')
+    #selected_schools = list(map(int, request.GET.getlist('schools[]')))
     print(selected_years)
     print(selected_subjects)
-    graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects)
+    graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects, selected_schools)
     return JsonResponse({'graph_data': graph_data})

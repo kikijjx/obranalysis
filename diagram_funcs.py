@@ -38,13 +38,13 @@ def average_subject_result_show(years, params):
     return graph_data
 
 #Лучшие баллы в школах по предметам
-def graph_show_best_schools(years, params):
+def graph_show_best_schools(years, params, schools):
     data_frames = []
     bar_width = 0.18
-
+    school = []
     for year in years:
-        data_frames.append(pd.DataFrame(functions.get_average_best_subject_school_result(year), columns=['Индекс', 'Школа', 'Предмет', 'Баллы']))
-
+        data_frames.append(pd.DataFrame(functions.get_average_best_subject_school_result(year, schools), columns=['Индекс', 'Школа', 'Предмет', 'Баллы']))
+        school = pd.DataFrame(functions.get_average_best_subject_school_result(year, schools))
     plt.figure()
     for i, df in enumerate(data_frames):
         df_filtered = df[df['Индекс'].isin(params)]
