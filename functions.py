@@ -79,18 +79,62 @@ def print_task_table():
         result = cursor.fetchall()
         return result
 
-#ответ на определенную задачу из результата экзамена опеределённого студента
-def get_student_answer(student_id, task_id):
+# ответы опеределённого студента
+
+
+def get_all_student_answer(student_id):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("SELECT tt.task_id, tt.answer, rt.student_id, st.subject_name FROM Task_Table tt"
-                       "LEFT JOIN Result_Table rt ON tt.result_id = rt.student_id AND tt.result_id = rt.subject_form_id "
+                       "LEFT JOIN Result_Table rt ON tt.result_id = rt.result_id "
                        "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
                        "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
-                       f"WHERE tt.task_id = {task_id} AND rt.student_id = '{student_id}';")
+                       f"WHERE rt.student_id = '{student_id}';")
         result = cursor.fetchall()
         return result
 
+# ответ на определенную задачу из результата экзамена опеределённого студента
+
+
+def get_student_answer(student_id, task_id):  # student_id = ид студента, task_id = тип задания + номер задания + - + год экзамена + ид предмета (A1-202201)
+    with sq3.connect('test.db') as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT tt.task_id, tt.answer, rt.student_id, st.subject_name FROM Task_Table tt "
+                       "LEFT JOIN Result_Table rt ON tt.result_id = rt.result_id "
+                       "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
+                       "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+                       f"WHERE tt.task_id = '{task_id}-{student_id}' AND rt.student_id = '{student_id}';")
+        result = cursor.fetchall()
+        return result
+
+# процент выполнения определённого типа заданий
+
+
+def get_task_type_accuracy(task_type, year):  # task_type = тип задания (A)
+    with sq3.connect('test.db') as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT st.subject_id, st.subject_name, sft.year_of_exam, SUBSTRING(tt.task_id,1,1), CAST(COUNT(CASE WHEN tt.answer > 0 THEN 1 END) AS REAL)/COUNT(tt.answer) AS accuracy FROM Task_Table tt "
+                       "LEFT JOIN Result_Table rt ON tt.result_id = rt.result_id "
+                       "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
+                       "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+                       f"WHERE tt.task_id LIKE '{task_type}%' AND sft.year_of_exam = {year}"
+                       "GROUP BY st.subject_name")
+        result = cursor.fetchall()
+        return result
+
+# процент выполнения определённого задания
+
+
+def get_task_accuracy(task_id):  # task_id = тип задания + номер задания + - + год экзамена + ид предмета (A1-202201)
+    with sq3.connect('test.db') as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT tt.task_id, sft.year_of_exam, st.subject_name, AVG(tt.answer)/MAX(tt.answer) AS accuracy FROM Task_Table tt "
+                       "LEFT JOIN Result_Table rt ON tt.result_id = rt.result_id "
+                       "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
+                       "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+                       f"WHERE tt.task_id LIKE '{task_id}%'")
+        result = cursor.fetchall()
+        return result
 #Средние результаты по предметам и годам
 def get_average_subject_result(year):
     with sq3.connect('test.db') as con:

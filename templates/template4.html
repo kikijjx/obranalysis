@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Процент выполнения определённой части заданий по предметам</h1>
+    <img id="graph-img" src="" alt="График">
+
+    <div id="checkbox-container">
+            {% for subject in subjects_list %}
+            <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
+            <input type="checkbox" id="checkbox{{ subject.0 }}" value="{{ subject.1 }}" name="subjects">
+        {% endfor %}
+    </div>
+    <div id="checkbox-container-years">
+        {% for year in years_list %}
+            <label for="checkbox-year{{ year }}">{{ year }}:</label>
+            <input type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}" name="years">
+        {% endfor %}
+    </div>
+    <div id="checkbox-container-task-types">
+        {% for type task_types_list %}
+            <label for="checkbox-task-types{{ type.1 }}">{{ type.3 }}:</label>
+            <input type="checkbox" checked id="checkbox-task-types{{ type.1 }}" value="{{ type.3 }}" name="types">
+        {% endfor %}
+    </div>
+
+    <button id="update-graph">Применить</button>
+
+<script>
+$(document).ready(function() {
+    $('#update-graph').click(function() {
+        var selectedSubjects = [];
+        var selectedYears = [];
+        var selectedTaskTypes = [];
+        console.log(selectedSchools)
+        $('input[name="subjects"]:checked').each(function() {
+            selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
+        });
+
+        $('input[name="types"]:checked').each(function() {
+            selectedSTaskTypes.push(parseInt($(this).attr('id').substring(15), 10));
+        });
+
+        $('input[name="years"]:checked').each(function() {
+            selectedYears.push(parseInt($(this).val(), 10));
+        });
+
+
+        $.ajax({
+            url: '/update_graph3/',
+            data: {
+                'subjects': selectedSubjects,
+                'years': selectedYears,
+                'task_types': selectedTaskTypes,
+            },
+            dataType: 'json',
+            success: function(data) {
+                $('#graph-img').attr('src', 'data:image/png;base64,' + data.graph_data);
+            },
+            error: function() {
+                alert('Ошибка при построении графика, выберите другие данные');
+            }
+        });
+    });
+});
+</script>
+</body>
+
+
+</html>

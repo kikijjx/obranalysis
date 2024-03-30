@@ -46,3 +46,20 @@ def update_graph2(request):
     print(selected_subjects)
     graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects, selected_schools)
     return JsonResponse({'graph_data': graph_data})
+
+def update_graph3(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    print(selected_years)
+    print(selected_subjects)
+    graph_data = diagram_funcs.average_subject_accuracy_show(selected_years, selected_subjects)
+    return JsonResponse({'graph_data': graph_data})
+
+def update_graph4(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    selected_task_types = list(map(request.GET.getlist('task_types[]')))
+    print(selected_years)
+    print(selected_subjects)
+    graph_data = diagram_funcs.average_subject_task_type_accuracy_show(selected_task_types, selected_years, selected_subjects)
+    return JsonResponse({'graph_data': graph_data})
