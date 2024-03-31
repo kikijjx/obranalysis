@@ -26,6 +26,10 @@ def load_template(request):
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
         return render(request, 'template2.html', {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list})
+    elif template_name == 'template3':
+        return render(request, 'template3.html', {'subjects_list': subjects_list, 'years_list': years_list})
+    elif template_name == 'template4':
+        return render(request, 'template4.html', {'subjects_list': subjects_list, 'years_list': years_list})
     else:
         return render(request, 'sorry.html')
 
