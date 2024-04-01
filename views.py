@@ -45,11 +45,10 @@ def update_graph2(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_schools = request.GET.getlist('schools[]')
-    #selected_schools = list(map(int, request.GET.getlist('schools[]')))
     print(selected_years)
     print(selected_subjects)
     graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects, selected_schools)
-    return JsonResponse({'graph_data': graph_data})
+    return HttpResponse(graph_data)
 
 def update_graph3(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))

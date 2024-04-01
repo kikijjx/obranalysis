@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Школы с лучшим средним баллом по предметам</h1>
-    <img id="graph-img" src="" alt="График">
+    <div id="graph-img"></div>
 
     <div id="checkbox-container">
             {% for subject in subjects_list %}
@@ -56,9 +56,9 @@ $(document).ready(function() {
                 'years': selectedYears,
                 'schools': selectedSchools,
             },
-            dataType: 'json',
+            dataType: 'html',
             success: function(data) {
-                $('#graph-img').attr('src', 'data:image/png;base64,' + data.graph_data);
+                $('#graph-img').html(data);
             },
             error: function() {
                 alert('Ошибка при построении графика, выберите другие данные');
