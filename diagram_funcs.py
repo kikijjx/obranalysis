@@ -22,9 +22,9 @@ def average_subject_result_show(years, params):
         df_filtered = df[df['Индекс'].isin(params)]
         df_filtered = df_filtered.reset_index(drop=True)
 
-        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Баллы'], name=str(years[i])))
+        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Баллы'], text=df_filtered['Баллы'].apply(lambda x: str(round(x, 1))), textposition='auto', name=str(years[i])))
 
-    fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Баллы')
+    fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Баллы', showlegend=True)
 
     graph_data = fig.to_html(full_html=False)
 
@@ -43,10 +43,10 @@ def graph_show_best_schools(years, params, schools):
         df_filtered = df[df['Индекс'].isin(params)]
         df_filtered = df_filtered.reset_index(drop=True)
 
-        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Баллы'], text=df_filtered['Школа'], textposition='auto', name=str(years[i])))
+        text = df_filtered['Школа'] + '<br>' + df_filtered['Баллы'].apply(lambda x: str(round(x, 1)))
+        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Баллы'], text=text, textposition='auto', name=str(years[i])))
 
     fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Баллы', showlegend=True)
-    fig.update_xaxes(tickangle=45)
 
     graph_data = fig.to_html(full_html=False)
 
@@ -64,10 +64,10 @@ def average_subject_accuracy_show(years, params):
         df_filtered = df[df['Индекс'].isin(params)]
         df_filtered = df_filtered.reset_index(drop=True)
 
-        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Процент'], name=str(years[i])))
+        text = df_filtered['Процент'].apply(lambda x: str(round(x, 1)) + '%')
+        fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Процент'], text=text, textposition='auto', name=str(years[i])))
 
     fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Процент выполнения', showlegend=True)
-    fig.update_xaxes(tickangle=45)
 
     graph_data = fig.to_html(full_html=False)
 
