@@ -20,16 +20,19 @@ def main(request):
 def load_template(request):
     template_name = request.GET.get('template')
     subjects_list = functions.print_subject_table()
-    schools_list = functions.get_school_table()
     years_list = functions.get_actual_years()
+    print()
     if template_name == 'template1':
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
+        schools_list = functions.get_school_table()
         return render(request, 'template2.html', {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list})
     elif template_name == 'template3':
         return render(request, 'template3.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template4':
-        return render(request, 'template4.html', {'subjects_list': subjects_list, 'years_list': years_list})
+        task_list = functions.print_task_table() #нужна другая процедура
+        print(task_list)
+        return render(request, 'template4.html', {'subjects_list': subjects_list, 'years_list': years_list, 'task_types_list': task_list})
     else:
         return render(request, 'sorry.html')
 

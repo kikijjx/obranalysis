@@ -81,7 +81,7 @@ def average_subject_task_type_accuracy_show(task_types, years, params):
     task = []
     for type in task_types:
         for year in years:
-            data_frames.append(pd.DataFrame(functions.get_task_type_accuracy(task_type, year), columns=['Индекс','Предмет','Год','Тип','Процент']))
+            data_frames.append(pd.DataFrame(functions.get_task_type_accuracy(task_types, year), columns=['Индекс','Предмет','Год','Тип','Процент']))
 
     plt.figure()
 
