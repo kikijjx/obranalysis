@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 </head>
 <body>
     <h1>Средние баллы по предметам</h1>
-    <img id="graph-img" src="" alt="График">
+        <div id="graph-img"></div>
+
 
     <div id="checkbox-container">
             {% for subject in subjects_list %}
@@ -43,9 +46,9 @@ $(document).ready(function() {
                 'subjects': selectedSubjects,
                 'years': selectedYears
             },
-            dataType: 'json',
+            dataType: 'html',
             success: function(data) {
-                $('#graph-img').attr('src', 'data:image/png;base64,' + data.graph_data);
+                $('#graph-img').html(data);
             },
             error: function() {
                 alert('Ошибка при построении графика, выберите другие данные');
