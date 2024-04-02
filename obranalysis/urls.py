@@ -26,6 +26,7 @@ urlpatterns = [
     path('update_graph1/', views.update_graph1, name='update_graph1'),
     path('update_graph2/', views.update_graph2, name='update_graph2'),
     path('update_graph3/', views.update_graph3, name='update_graph3'),
-    path('update_graph4/', views.update_graph4, name='update_graph4')
+    path('update_graph4/', views.update_graph4, name='update_graph4'),
+    path('generate_press_release/', views.generate_press_release, name='generate_press_release'),
 
 ]

@@ -14,13 +14,16 @@
     </style>
 </head>
 <body>
-<select id="templates-select">
-    <option value="">Выберите шаблон...</option>
-    <option value="template1">Шаблон 1</option>
-    <option value="template2">Шаблон 2</option>
-    <option value="template3">Шаблон 3</option>
-    <option value="template4">Шаблон 4</option>
-</select>
+<div class="container d-flex justify-content-between mb-3">
+    <select id="templates-select">
+        <option value="">Выберите шаблон...</option>
+        <option value="template1">Шаблон 1</option>
+        <option value="template2">Шаблон 2</option>
+        <option value="template3">Шаблон 3</option>
+        <option value="template4">Шаблон 4</option>
+    </select>
+    <button id="generate-press-release-btn" type="button" class="btn btn-primary ml-2">Составить пресс-релиз</button>
+</div>
 <div id="content"></div>
 
 <script>
@@ -48,6 +51,21 @@
             } else {
                 $('#content').html('');
             }
+        });
+
+        $('#generate-press-release-btn').click(function () {
+            $.ajax({
+                url: '/generate_press_release/',
+                dataType: 'text',
+                success: function (data) {
+                    data = data.replace(/\n/g, '<br>');
+                    var pressReleaseWindow = window.open('', '_blank');
+                    pressReleaseWindow.document.write(data);
+                },
+                error: function () {
+                    alert('Ошибка при составлении пресс-релиза');
+                }
+            });
         });
     });
 </script>

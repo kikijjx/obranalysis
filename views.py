@@ -4,8 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import matplotlib
 from django.http import JsonResponse
-
 import functions
+from string import Template
 
 matplotlib.use('Agg')
 
@@ -42,6 +42,21 @@ def update_graph1(request):
     print(selected_subjects)
     graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects)
     return HttpResponse(graph_data)
+
+def generate_press_release(request):
+    data1 = 2
+    data2 = 75
+    data3 = 5
+    with open('pressreleasetemplate.txt', 'r', encoding='utf-8') as file:
+        template = Template(file.read())
+    press_release = template.substitute(
+        data1=data1,
+        data2=data2,
+        data3=data3,
+    )
+    with open('pressrelease.txt', 'w', encoding='utf-8') as file:
+        file.write(press_release)
+    return HttpResponse(press_release, content_type='text/plain')
 
 
 def update_graph2(request):
