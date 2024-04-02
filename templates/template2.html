@@ -5,67 +5,87 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Школы с лучшим средним баллом по предметам</h1>
-    <div id="graph-img"></div>
-
-    <div id="checkbox-container">
-            {% for subject in subjects_list %}
-            <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
-            <input type="checkbox" id="checkbox{{ subject.0 }}" value="{{ subject.1 }}" name="subjects">
-        {% endfor %}
+<div class="container">
+    <h1 class="text-center my-4">Школы с лучшим средним баллом по предметам</h1>
+    <div id="graph-img" class="mb-4"></div>
+    <div class="row">
+        <div class="col">
+            <h3>Предметы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for subject in subjects_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="checkbox{{ subject.0 }}"
+                               value="{{ subject.1 }}" name="subjects">
+                        <label class="form-check-label" for="checkbox{{ subject.0 }}">{{ subject.1 }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            <h3>Годы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for year in years_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}"
+                               name="years">
+                        <label class="form-check-label" for="checkbox-year{{ year }}">{{ year }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            <h3>Школы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for school in schoolcode_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked id="checkbox-school{{ school.1 }}"
+                               value="{{ school.3 }}" name="schools">
+                        <label class="form-check-label" for="checkbox-school{{ school.1 }}">{{ school.3 }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-    <div id="checkbox-container-years">
-        {% for year in years_list %}
-            <label for="checkbox-year{{ year }}">{{ year }}:</label>
-            <input type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}" name="years">
-        {% endfor %}
-    </div>
-    <div id="checkbox-container-schools">
-        {% for school in schoolcode_list %}
-            <label for="checkbox-school{{ school.1 }}">{{ school.3 }}:</label>
-            <input type="checkbox" checked id="checkbox-school{{ school.1 }}" value="{{ school.3 }}" name="schools">
-        {% endfor %}
-    </div>
-
-    <button id="update-graph">Применить</button>
+    <button id="update-graph" class="btn btn-primary btn-block mt-4">Применить</button>
+</div>
 
 <script>
-$(document).ready(function() {
-    $('#update-graph').click(function() {
-        var selectedSubjects = [];
-        var selectedYears = [];
-        var selectedSchools = [];
-        console.log(selectedSchools)
-        $('input[name="subjects"]:checked').each(function() {
-            selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
-        });
+    $(document).ready(function () {
+        $('#update-graph').click(function () {
+            var selectedSubjects = [];
+            var selectedYears = [];
+            var selectedSchools = [];
+            console.log(selectedSchools)
+            $('input[name="subjects"]:checked').each(function () {
+                selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
+            });
 
-        $('input[name="schools"]:checked').each(function() {
-            selectedSchools.push(parseInt($(this).attr('id').substring(15), 10));
-        });
+            $('input[name="schools"]:checked').each(function () {
+                selectedSchools.push(parseInt($(this).attr('id').substring(15), 10));
+            });
 
-        $('input[name="years"]:checked').each(function() {
-            selectedYears.push(parseInt($(this).val(), 10));
-        });
+            $('input[name="years"]:checked').each(function () {
+                selectedYears.push(parseInt($(this).val(), 10));
+            });
 
 
-        $.ajax({
-            url: '/update_graph2/',
-            data: {
-                'subjects': selectedSubjects,
-                'years': selectedYears,
-                'schools': selectedSchools,
-            },
-            dataType: 'html',
-            success: function(data) {
-                $('#graph-img').html(data);
-            },
-            error: function() {
-                alert('Ошибка при построении графика, выберите другие данные');
-            }
+            $.ajax({
+                url: '/update_graph2/',
+                data: {
+                    'subjects': selectedSubjects,
+                    'years': selectedYears,
+                    'schools': selectedSchools,
+                },
+                dataType: 'html',
+                success: function (data) {
+                    $('#graph-img').html(data);
+                },
+                error: function () {
+                    alert('Ошибка при построении графика, выберите другие данные');
+                }
+            });
         });
     });
-});
 </script>
 </body>
 

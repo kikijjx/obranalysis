@@ -13,14 +13,12 @@
             <label for="checkbox{{ subject.0 }}">{{ subject.1 }}:</label>
             <input type="checkbox" id="checkbox{{ subject.0 }}" value="{{ subject.1 }}" name="subjects">
         {% endfor %}
-    </div>
-    <div id="checkbox-container-years">
+    <br>
         {% for year in years_list %}
             <label for="checkbox-year{{ year }}">{{ year }}:</label>
             <input type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}" name="years">
         {% endfor %}
-    </div>
-    <div id="checkbox-container-task-types">
+    <br>
         {% for type task_types_list %}
             <label for="checkbox-task-types{{ type.1 }}">{{ type.3 }}:</label>
             <input type="checkbox" checked id="checkbox-task-types{{ type.1 }}" value="{{ type.3 }}" name="types">
