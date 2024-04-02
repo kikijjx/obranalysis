@@ -16,13 +16,13 @@ def main(request):
 
 def load_template(request):
     template_name = request.GET.get('template')
-    subjects_list = functions.print_subject_table()
-    years_list = functions.get_actual_years()
+    subjects_list = sorted(functions.print_subject_table(), key=lambda x: x[1])
+    years_list = sorted(functions.get_actual_years(), key=lambda x: x)
     print()
     if template_name == 'template1':
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
-        schools_list = functions.get_school_table()
+        schools_list = sorted(functions.get_school_table(), key=lambda x: x[1])
         return render(request, 'template2.html',
                       {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list})
     elif template_name == 'template3':
