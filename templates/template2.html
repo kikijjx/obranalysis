@@ -35,27 +35,74 @@
         </div>
         <div class="col">
             <h3>Школы:</h3>
+
             <div class="checkbox-container d-flex flex-column">
-                {% for school in schoolcode_list %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" checked id="checkbox-school{{ school.1 }}"
-                               value="{{ school.3 }}" name="schools">
-                        <label class="form-check-label" for="checkbox-school{{ school.1 }}">{{ school.3 }}</label>
+                {% for area in area_list %}
+                    <div class="area-container">
+                        <input class="form-check-input area-checkbox" type="checkbox" checked
+                               id="checkbox-area{{ area.0 }}" value="{{ area.2 }}" name="areas">
+
+                        <label class="form-check-label" for="checkbox-area{{ area.0 }}">{{ area.2 }}</label>
+                        <div class="school-checkboxes">
+                            {% for school in schoolcode_list %}
+                                {% if school.6 == area.0 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input school-checkbox" type="checkbox" checked
+                                               id="checkbox-school{{ school.1 }}" value="{{ school.3 }}" name="schools"
+                                               rnb="{{ school.6 }}">
+                                        <label class="form-check-label"
+                                               for="checkbox-school{{ school.1 }}">{{ school.3 }}</label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
+
     </div>
     <button id="update-graph" class="btn btn-primary btn-block mt-4">Применить</button>
 </div>
 
 <script>
     $(document).ready(function () {
+
+        $('.area-checkbox').change(function () {
+            var areaCheckbox = $(this);
+            var isChecked = areaCheckbox.is(':checked');
+            var areaSchools = areaCheckbox.siblings('.school-checkboxes').find('.school-checkbox');
+
+            areaSchools.each(function () {
+                $(this).prop('checked', isChecked);
+            });
+        });
+
+        $('.school-checkbox').change(function () {
+            var schoolCheckbox = $(this);
+            var areaCheckbox = schoolCheckbox.closest('.area-container').find('.area-checkbox');
+            var areaSchools = schoolCheckbox.closest('.school-checkboxes').find('.school-checkbox');
+            var allSchoolsChecked = true;
+
+            areaSchools.each(function () {
+                if (!$(this).is(':checked')) {
+                    allSchoolsChecked = false;
+                    return false;
+                }
+            });
+
+            if (areaSchools.filter(':checked').length > 0) {
+                areaCheckbox.prop('checked', true);
+            } else {
+                areaCheckbox.prop('checked', false);
+            }
+        });
+
         $('#update-graph').click(function () {
             var selectedSubjects = [];
             var selectedYears = [];
             var selectedSchools = [];
-            console.log(selectedSchools)
+            var selectedAreas = [];
             $('input[name="subjects"]:checked').each(function () {
                 selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
             });
@@ -63,10 +110,14 @@
             $('input[name="schools"]:checked').each(function () {
                 selectedSchools.push(parseInt($(this).attr('id').substring(15), 10));
             });
+            $('input[name="areas"]:checked').each(function () {
+                selectedAreas.push(parseInt($(this).attr('id').substring(13), 10));
+            });
 
             $('input[name="years"]:checked').each(function () {
                 selectedYears.push(parseInt($(this).val(), 10));
             });
+            console.log(selectedAreas)
 
 
             $.ajax({
@@ -75,6 +126,7 @@
                     'subjects': selectedSubjects,
                     'years': selectedYears,
                     'schools': selectedSchools,
+                    'areas': selectedAreas,
                 },
                 dataType: 'html',
                 success: function (data) {

@@ -24,6 +24,7 @@ def print_area_table():
         result = cursor.fetchall()
         return result
 
+
 #Вывод всех данных из таблицы Town_Type_Table
 def print_town_type_table():
     with sq3.connect('test.db') as con:
@@ -48,6 +49,8 @@ def get_school_table():
         result = cursor.fetchall()
         return result
 #Вывод всех данных из таблицы School_Student_Table
+print(print_area_table())
+print(get_school_table())
 def print_school_student_table():
     with sq3.connect('test.db') as con:
         cursor = con.cursor()

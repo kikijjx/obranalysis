@@ -18,13 +18,19 @@ def load_template(request):
     template_name = request.GET.get('template')
     subjects_list = sorted(functions.print_subject_table(), key=lambda x: x[1])
     years_list = sorted(functions.get_actual_years(), key=lambda x: x)
-    print()
+    area_schools_dict = {}
+    for area in functions.print_area_table():
+        area_schools_dict[area[0]] = [school[1] for school in functions.get_school_table() if school[6] == area[0]]
     if template_name == 'template1':
         return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template2':
         schools_list = sorted(functions.get_school_table(), key=lambda x: x[1])
+        area_list = sorted(functions.print_area_table(), key=lambda x: x[1])
+        print(area_schools_dict)
+
         return render(request, 'template2.html',
-                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list})
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
+                       'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template3':
         return render(request, 'template3.html', {'subjects_list': subjects_list, 'years_list': years_list})
     elif template_name == 'template4':
@@ -42,6 +48,7 @@ def update_graph1(request):
     print(selected_subjects)
     graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects)
     return HttpResponse(graph_data)
+
 
 def generate_press_release(request):
     data1 = 2
@@ -63,8 +70,9 @@ def update_graph2(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_schools = request.GET.getlist('schools[]')
-    print(selected_years)
-    print(selected_subjects)
+    selected_areas = request.GET.getlist('areas[]')
+    print(selected_schools)
+    print(selected_areas)
     graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects, selected_schools)
     return HttpResponse(graph_data)
 
