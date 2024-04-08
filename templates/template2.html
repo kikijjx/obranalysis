@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
 </head>
 <body>
 <div class="container">
@@ -19,7 +20,10 @@
                         <label class="form-check-label" for="checkbox{{ subject.0 }}">{{ subject.1 }}</label>
                     </div>
                 {% endfor %}
+
             </div>
+        <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
         </div>
         <div class="col">
             <h3>Годы:</h3>
@@ -31,17 +35,19 @@
                         <label class="form-check-label" for="checkbox-year{{ year }}">{{ year }}</label>
                     </div>
                 {% endfor %}
+
             </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
         </div>
         <div class="col">
             <h3>Школы:</h3>
 
-            <div class="checkbox-container d-flex flex-column">
+            <div class="checkbox-container d-flex flex-column" style="position: relative; padding-left: 20px">
                 {% for area in area_list %}
-                    <div class="area-container">
+                    <div>
                         <input class="form-check-input area-checkbox" type="checkbox" checked
                                id="checkbox-area{{ area.0 }}" value="{{ area.2 }}" name="areas">
-
                         <label class="form-check-label" for="checkbox-area{{ area.0 }}">{{ area.2 }}</label>
                         <div class="school-checkboxes">
                             {% for school in schoolcode_list %}
@@ -58,7 +64,10 @@
                         </div>
                     </div>
                 {% endfor %}
+
             </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
         </div>
 
     </div>
@@ -67,6 +76,18 @@
 
 <script>
     $(document).ready(function () {
+
+
+        $('.select-all').click(function () {
+        $(this).closest('.col').find('input[type="checkbox"]').not(this).prop('checked', true);
+        $('.area-checkbox').trigger('change');
+    });
+
+    $('.deselect-all').click(function () {
+        $(this).closest('.col').find('input[type="checkbox"]').not(this).prop('checked', false);
+        $('.area-checkbox').trigger('change');
+    });
+
 
         $('.area-checkbox').change(function () {
             var areaCheckbox = $(this);
@@ -139,6 +160,7 @@
         });
     });
 </script>
+
 </body>
 
 
