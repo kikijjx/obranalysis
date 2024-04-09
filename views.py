@@ -19,20 +19,22 @@ def load_template(request):
     subjects_list = sorted(functions.print_subject_table(), key=lambda x: x[1])
     years_list = sorted(functions.get_actual_years(), key=lambda x: x)
     area_schools_dict = {}
+    schools_list = sorted(functions.get_school_table(), key=lambda x: x[1])
+    area_list = sorted(functions.print_area_table(), key=lambda x: x[1])
     for area in functions.print_area_table():
         area_schools_dict[area[0]] = [school[1] for school in functions.get_school_table() if school[6] == area[0]]
     if template_name == 'template1':
-        return render(request, 'template1.html', {'subjects_list': subjects_list, 'years_list': years_list})
+        return render(request, 'template1.html',
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
+                       'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template2':
-        schools_list = sorted(functions.get_school_table(), key=lambda x: x[1])
-        area_list = sorted(functions.print_area_table(), key=lambda x: x[1])
-        print(area_schools_dict)
-
         return render(request, 'template2.html',
                       {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
                        'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template3':
-        return render(request, 'template3.html', {'subjects_list': subjects_list, 'years_list': years_list})
+        return render(request, 'template3.html',
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
+                       'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template4':
         task_list = pd.DataFrame(functions.print_task_table())  # нужна другая процедура
         return render(request, 'template4.html',
