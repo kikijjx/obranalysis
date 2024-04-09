@@ -77,9 +77,9 @@ def update_graph2(request):
 def update_graph3(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
-    print(selected_years)
-    print(selected_subjects)
-    graph_data = diagram_funcs.average_subject_accuracy_show(selected_years, selected_subjects)
+    selected_schools = request.GET.getlist('schools[]')
+    selected_areas = request.GET.getlist('areas[]')
+    graph_data = diagram_funcs.average_subject_accuracy_show(selected_years, selected_subjects, selected_schools)
     return HttpResponse(graph_data)
 
 

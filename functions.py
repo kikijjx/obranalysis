@@ -269,17 +269,24 @@ def get_average_best_subject_school_result(year, school_codes):
 
 
 #Средние % выполнения
-def get_average_subject_accuracy(year):
+def get_average_subject_accuracy(year, school_codes):
     with sq3.connect('test.db') as con:
         cursor = con.cursor()
+
+        school_codes_str = ', '.join(['?' for _ in school_codes])
+
         cursor.execute(
-            "SELECT st.subject_id, st.subject_name, AVG(rt.accuracy) AS average_accuracy FROM Subject_Form_Table sft "
+            "SELECT st.subject_id, st.subject_name, AVG(rt.accuracy) AS average_accuracy "
+            "FROM Subject_Form_Table sft "
             "LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
             "INNER JOIN Subject_Table st ON sft.subject_id = st.subject_id "
-            f"WHERE sft.year_of_exam = {year} "
-            "GROUP BY sft.subject_form_id; ")
+            "LEFT JOIN School_Student_Table sst ON rt.student_id = sst.student_id "
+            "LEFT JOIN School_Table st2 ON sst.school_code = st2.school_CODE "
+            f"WHERE sft.year_of_exam = {year} AND st2.school_CODE IN ({school_codes_str}) "
+            "GROUP BY sft.subject_form_id;", school_codes)
         result = cursor.fetchall()
         return result
+
 
 #print(get_average_subject_accuracy(2018))
 

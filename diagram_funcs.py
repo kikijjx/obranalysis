@@ -53,10 +53,10 @@ def graph_show_best_schools(years, params, schools):
     return graph_data
 
 
-def average_subject_accuracy_show(years, params):
+def average_subject_accuracy_show(years, params, schools):
     data_frames = []
     for year in years:
-        data_frames.append(pd.DataFrame(functions.get_average_subject_accuracy(year), columns=['Индекс', 'Предмет', 'Процент']))
+        data_frames.append(pd.DataFrame(functions.get_average_subject_accuracy(year, schools), columns=['Индекс', 'Предмет', 'Процент']))
 
     fig = go.Figure()
 
@@ -72,6 +72,7 @@ def average_subject_accuracy_show(years, params):
     graph_data = fig.to_html(full_html=False)
 
     return graph_data
+
 
 
 
