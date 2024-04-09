@@ -11,10 +11,10 @@ def get_color(i):
     return colors[i % len(colors)]
 
 #Средние баллы по предметам
-def average_subject_result_show(years, params):
+def average_subject_result_show(years, params, schools):
     data_frames = []
     for year in years:
-        data_frames.append(pd.DataFrame(functions.get_average_subject_result(year), columns=['Индекс', 'Предмет', 'Баллы']))
+        data_frames.append(pd.DataFrame(functions.get_average_subject_result(year, schools), columns=['Индекс', 'Предмет', 'Баллы']))
 
     fig = go.Figure()
 

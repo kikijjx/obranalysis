@@ -42,16 +42,6 @@ def load_template(request):
     else:
         return render(request, 'sorry.html')
 
-
-def update_graph1(request):
-    selected_years = list(map(int, request.GET.getlist('years[]')))
-    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
-    print(selected_years)
-    print(selected_subjects)
-    graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects)
-    return HttpResponse(graph_data)
-
-
 def generate_press_release(request):
     data1 = 2
     data2 = 75
@@ -67,14 +57,19 @@ def generate_press_release(request):
         file.write(press_release)
     return HttpResponse(press_release, content_type='text/plain')
 
+def update_graph1(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    selected_schools = request.GET.getlist('schools[]')
+    selected_areas = request.GET.getlist('areas[]')
+    graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects, selected_schools)
+    return HttpResponse(graph_data)
 
 def update_graph2(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_schools = request.GET.getlist('schools[]')
     selected_areas = request.GET.getlist('areas[]')
-    print(selected_schools)
-    print(selected_areas)
     graph_data = diagram_funcs.graph_show_best_schools(selected_years, selected_subjects, selected_schools)
     return HttpResponse(graph_data)
 
