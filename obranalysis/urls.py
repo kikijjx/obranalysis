@@ -28,6 +28,7 @@ urlpatterns = [
     path('update_graph3/', views.update_graph3, name='update_graph3'),
     path('update_graph4/', views.update_graph4, name='update_graph4'),
     path('update_graph5/', views.update_graph5, name='update_graph5'),
+    path('update_graph6/', views.update_graph6, name='update_graph6'),
     path('generate_press_release/', views.generate_press_release, name='generate_press_release'),
 
 ]

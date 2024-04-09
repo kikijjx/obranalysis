@@ -315,3 +315,24 @@ def get_participant_count_by_subject_year(year, schools):
                        "GROUP BY sft.subject_id;", schools)
         result = cursor.fetchall()
         return result
+
+def get_average_district_result(subject_id, years, area_codes):
+    with sq3.connect(db_path) as con:
+        cursor = con.cursor()
+
+        area_codes_str = ', '.join(['?' for _ in area_codes])
+        years_str = ', '.join(['?' for _ in years])
+
+        cursor.execute(
+            "SELECT at.area_name, AVG(rt.score_100) AS average_results "
+            "FROM Area_Table at "
+            "LEFT JOIN School_Table st ON at.area_id = st.area_id "
+            "LEFT JOIN School_Student_Table sst ON st.school_code = sst.school_code "
+            "LEFT JOIN Result_Table rt ON sst.student_id = rt.student_id "
+            "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
+            "LEFT JOIN Subject_Table st2 ON sft.subject_id = st2.subject_id "
+            f"WHERE sft.subject_id = {subject_id} AND at.area_id IN ({area_codes_str}) AND sft.year_of_exam IN ({years_str}) "
+            "GROUP BY at.area_id;", area_codes + years)
+        result = cursor.fetchall()
+        return result
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center my-4">Средний балл по районам</h1>
+    <div id="graph-img" class="mb-4"></div>
+    <div class="row">
+        <div class="col">
+            <h3>Предмет:</h3>
+            <select id="subject-select">
+                {% for subject in subjects_list %}
+                    <option value="{{ subject.0 }}">{{ subject.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <h3>Годы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for year in years_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked id="checkbox-year{{ year }}" value="{{ year }}"
+                               name="years">
+                        <label class="form-check-label" for="checkbox-year{{ year }}">{{ year }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
+        </div>
+        <div class="col">
+            <h3>Районы:</h3>
+            <div class="checkbox-container d-flex flex-column" style="position: relative; padding-left: 20px">
+                {% for area in area_list %}
+                    <div>
+                        <input class="form-check-input area-checkbox" type="checkbox" checked
+                               id="checkbox-area{{ area.0 }}" value="{{ area.2 }}" name="areas">
+                        <label class="form-check-label" for="checkbox-area{{ area.0 }}">{{ area.2 }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
+        </div>
+    </div>
+    <button id="update-graph" class="btn btn-primary btn-block mt-4">Применить</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+    $('.select-all, .deselect-all').click(function () {
+        $(this).closest('.col').find('input[type="checkbox"]').not(this).prop('checked', $(this).hasClass('select-all'));
+    });
+
+    $('#update-graph').click(function () {
+        var selectedSubject = $('#subject-select').val();
+        var selectedYears = $('input[name="years"]:checked').map(function () {
+            return parseInt($(this).val(), 10);
+        }).get();
+        var selectedAreas = $('input[name="areas"]:checked').map(function () {
+            return $(this).attr('id').substring(13);
+        }).get();
+
+        $.ajax({
+            url: '/update_graph6/',
+            data: {
+                'subject': selectedSubject,
+                'years': selectedYears,
+                'areas': selectedAreas,
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('#graph-img').html(data);
+            },
+            error: function () {
+                alert('Ошибка при построении графика, выберите другие данные');
+            }
+        });
+    });
+});
+
+    });
+</script>
+</body>
+</html>

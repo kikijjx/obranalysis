@@ -43,6 +43,10 @@ def load_template(request):
         return render(request, 'template5.html',
                       {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
                        'area_list': area_list, 'area_schools_dict': area_schools_dict})
+    elif template_name == 'template6':
+        return render(request, 'template6.html',
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
+                       'area_list': area_list, 'area_schools_dict': area_schools_dict})
     else:
         return render(request, 'sorry.html')
 
@@ -103,4 +107,11 @@ def update_graph5(request):
     selected_schools = request.GET.getlist('schools[]')
     selected_areas = request.GET.getlist('areas[]')
     graph_data = diagram_funcs.show_participant_count(selected_years, selected_subjects, selected_schools)
+    return HttpResponse(graph_data)
+
+def update_graph6(request):
+    selected_subject = int(request.GET.get('subject'))
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_areas = request.GET.getlist('areas[]')
+    graph_data = diagram_funcs.average_district_result_show(selected_subject, selected_years, selected_areas)
     return HttpResponse(graph_data)

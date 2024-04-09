@@ -111,20 +111,23 @@ def show_participant_count(years, params, schools):
     for year in years:
         data = functions.get_participant_count_by_subject_year(year, schools)
         data_frames.append(pd.DataFrame(data, columns=['Индекс', 'Предмет', 'Количество']))
-
     fig = go.Figure()
-
     for i, df in enumerate(data_frames):
         df_filtered = df[df['Индекс'].isin(params)]
         df_filtered = df_filtered.reset_index(drop=True)
-
         text = df_filtered['Количество'].apply(lambda x: str(x))
         fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Количество'], text=text, textposition='auto', name=str(years[i])))
-
     fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Количество участников', showlegend=True)
-
     graph_data = fig.to_html(full_html=False)
-
     return graph_data
 
-
+def average_district_result_show(subject_id, years, areas):
+    data_frames = []
+    for year in years:
+        data_frames.append(pd.DataFrame(functions.get_average_district_result(subject_id, [year], areas), columns=['Район', 'Баллы']))
+    fig = go.Figure()
+    for i, df in enumerate(data_frames):
+        fig.add_trace(go.Bar(x=df['Район'], y=df['Баллы'], text=df['Баллы'].apply(lambda x: str(round(x, 1))), textposition='auto', name=str(years[i])))
+    fig.update_layout(barmode='group', xaxis_title='Районы', yaxis_title='Баллы', showlegend=True)
+    graph_data = fig.to_html(full_html=False)
+    return graph_data
