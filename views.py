@@ -39,6 +39,10 @@ def load_template(request):
         task_list = pd.DataFrame(functions.print_task_table())  # нужна другая процедура
         return render(request, 'template4.html',
                       {'subjects_list': subjects_list, 'years_list': years_list, 'task_types_list': task_list})
+    elif template_name == 'template5':
+        return render(request, 'template5.html',
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
+                       'area_list': area_list, 'area_schools_dict': area_schools_dict})
     else:
         return render(request, 'sorry.html')
 
@@ -92,3 +96,11 @@ def update_graph4(request):
     graph_data = diagram_funcs.average_subject_task_type_accuracy_show(selected_task_types, selected_years,
                                                                        selected_subjects)
     return JsonResponse({'graph_data': graph_data})
+
+def update_graph5(request):
+    selected_years = list(map(int, request.GET.getlist('years[]')))
+    selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
+    selected_schools = request.GET.getlist('schools[]')
+    selected_areas = request.GET.getlist('areas[]')
+    graph_data = diagram_funcs.show_participant_count(selected_years, selected_subjects, selected_schools)
+    return HttpResponse(graph_data)

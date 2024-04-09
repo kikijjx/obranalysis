@@ -15,7 +15,7 @@
             <div class="checkbox-container d-flex flex-column">
                 {% for subject in subjects_list %}
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkbox{{ subject.0 }}"
+                        <input class="form-check-input" type="checkbox" checked id="checkbox{{ subject.0 }}"
                                value="{{ subject.1 }}" name="subjects">
                         <label class="form-check-label" for="checkbox{{ subject.0 }}">{{ subject.1 }}</label>
                     </div>
@@ -29,7 +29,7 @@
             <div class="checkbox-container d-flex flex-column">
                 {% for year in years_list %}
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkbox-year{{ year }}" value="{{ year }}"
+                        <input class="form-check-input" type="checkbox" checked id="checkbox-year{{ year }}" value="{{ year }}"
                                name="years">
                         <label class="form-check-label" for="checkbox-year{{ year }}">{{ year }}</label>
                     </div>
