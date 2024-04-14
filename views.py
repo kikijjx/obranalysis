@@ -36,9 +36,10 @@ def load_template(request):
                       {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
                        'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template4':
-        task_list = pd.DataFrame(functions.print_task_table())  # нужна другая процедура
+        task_types_list = pd.DataFrame(functions.get_task_types())  # нужна другая процедура
         return render(request, 'template4.html',
-                      {'subjects_list': subjects_list, 'years_list': years_list, 'task_types_list': task_list})
+                      {'subjects_list': subjects_list, 'years_list': years_list, 'task_types_list': task_types_list,
+                        'schoolcode_list': schools_list, 'area_list': area_list, 'area_schools_dict': area_schools_dict})
     elif template_name == 'template5':
         return render(request, 'template5.html',
                       {'subjects_list': subjects_list, 'years_list': years_list, 'schoolcode_list': schools_list,
@@ -95,8 +96,6 @@ def update_graph4(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_task_types = list(map(request.GET.getlist('task_types[]')))
-    print(selected_years)
-    print(selected_subjects)
     graph_data = diagram_funcs.average_subject_task_type_accuracy_show(selected_task_types, selected_years,
                                                                        selected_subjects)
     return JsonResponse({'graph_data': graph_data})

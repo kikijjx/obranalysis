@@ -115,16 +115,24 @@ def get_student_answer(student_id, task_id):  # student_id = ид студент
 
 
 def get_task_type_accuracy(task_type, year):  # task_type = тип задания (A)
-    with sq3.connect(db_path) as con:
+    with sq3.connect('test.db') as con:
         cursor = con.cursor()
         cursor.execute("SELECT st.subject_id, st.subject_name, sft.year_of_exam, SUBSTRING(tt.task_id,1,1), CAST(COUNT(CASE WHEN tt.answer > 0 THEN 1 END) AS REAL)/COUNT(tt.answer) AS accuracy FROM Task_Table tt "
                        "LEFT JOIN Result_Table rt ON tt.result_id = rt.result_id "
                        "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
                        "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
-                       f"WHERE tt.task_id LIKE '{task_type}%' AND sft.year_of_exam = {year}"
+                       f"WHERE tt.task_id LIKE '{task_type}%' AND sft.year_of_exam = '{year}'"
                        "GROUP BY st.subject_name")
         result = cursor.fetchall()
         return result
+
+def get_task_types():
+    with sq3.connect('test.db') as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT DISTINCT SUBSTRING(task_id,1,1) FROM Task_Table ")
+        result = cursor.fetchall()
+        return result
+
 
 # процент выполнения определённого задания
 

@@ -77,32 +77,22 @@ def average_subject_accuracy_show(years, params, schools):
 
 
 def average_subject_task_type_accuracy_show(task_types, years, params):
-    data_frames = []
-    bar_width = 0.17
-    task = []
+    fig = go.Figure()
     for type in task_types:
+        data_frames = []
         for year in years:
-            data_frames.append(pd.DataFrame(functions.get_task_type_accuracy(task_types, year), columns=['Индекс','Предмет','Год','Тип','Процент']))
-
-    plt.figure()
-
-    for i, df in enumerate(data_frames):
-        df_filtered = df[df['Индекс'].isin(params)]
-        df_filtered = df_filtered.reset_index(drop=True)
-
-        plt.bar([j + i * bar_width for j in df_filtered['Индекс']], df_filtered['Процент'], bar_width, color=get_color(i), label=str(years[i]))
-        for j, value in enumerate(df_filtered['Процент']):
-            plt.text(df_filtered['Процент'][j] + i * bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-    plt.xlabel('Предметы')
-    plt.ylabel('Процент выполнения')
-    plt.xticks([j + len(data_frames) * bar_width / 2 for j in df_filtered['Индекс']], df_filtered['Процент'], rotation=45)
-    plt.legend()
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    graph_data = base64.b64encode(buf.getvalue()).decode()
-    plt.close()
+            data_frames.append(pd.DataFrame(functions.get_task_type_accuracy(type, year),
+                                            columns=['Индекс', 'Предмет', 'Год', 'Тип', 'Процент']))
+        year_count = 0
+        for i, df in enumerate(data_frames):
+            df_filtered = df[df['Индекс'].isin(params)]
+            df_filtered = df_filtered.reset_index(drop=True)
+            year = [2018, 2019, 2020, 2021, 2022]
+            fig.add_trace(go.Bar(x=[df_filtered['Предмет'],df_filtered['Год']], y=df_filtered['Процент'],
+                             text=df_filtered['Процент'].apply(lambda x: str(round(x, 1))), textposition='auto', name=f'{year[year_count]}:{type}'))
+            year_count+=1
+        fig.update_layout(barmode='stack', xaxis_title='Предметы', yaxis_title='Проценты', showlegend=True)
+    graph_data = fig.to_html(full_html=False)
     return graph_data
 
 
