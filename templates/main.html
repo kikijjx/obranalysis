@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obranalysis</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .checkbox-container {
+            overflow-y: auto;
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body>
+<div class="container d-flex justify-content-between mb-3">
+    <select id="templates-select">
+        <option value="">Выберите шаблон...</option>
+        <option value="template1">Средний балл</option>
+        <option value="template6">Средний балл по районам</option>
+        <option value="template2">Школы с лучшим средним баллом</option>
+        <option value="template3">Средний процент выполнения заданий</option>
+        <!-- <option value="template4">Процент выполнения определённой части заданий</option> -->
+        <option value="template5">Количество участников</option>
+
+    </select>
+    <!-- <button id="generate-press-release-btn" type="button" class="btn btn-primary ml-2">Составить пресс-релиз</button> -->
+</div>
+<div id="content"></div>
+
+<script>
+    var graphData = "{{ graph_data }}";
+    $(document).ready(function () {
+        $('#templates-select').change(function () {
+            var selectedTemplate = $(this).val();
+            if (selectedTemplate) {
+                $.ajax({
+                    url: '/load_template/',
+                    data: {
+                        'template': selectedTemplate
+                    },
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#content').html(data);
+                        if (selectedTemplate === 'template1') {
+                            $('#graph-img').attr('src', 'data:image/png;base64,' + graphData);
+                        }
+                    },
+                    error: function () {
+                        alert('Ошибка при загрузке шаблона');
+                    }
+                });
+            } else {
+                $('#content').html('');
+            }
+        });
+
+        $('#generate-press-release-btn').click(function () {
+            $.ajax({
+                url: '/generate_press_release/',
+                dataType: 'text',
+                success: function (data) {
+                    data = data.replace(/\n/g, '<br>');
+                    var pressReleaseWindow = window.open('', '_blank');
+                    pressReleaseWindow.document.write(data);
+                },
+                error: function () {
+                    alert('Ошибка при составлении пресс-релиза');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
+
+
+
+

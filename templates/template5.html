@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center my-4">Количество участников</h1>
+    <div id="graph-img" class="mb-4"></div>
+    <div class="row">
+        <div class="col">
+            <h3>Предметы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for subject in subjects_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked id="checkbox{{ subject.0 }}"
+                               value="{{ subject.1 }}" name="subjects">
+                        <label class="form-check-label" for="checkbox{{ subject.0 }}">{{ subject.1 }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
+        </div>
+        <div class="col">
+            <h3>Годы:</h3>
+            <div class="checkbox-container d-flex flex-column">
+                {% for year in years_list %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked id="checkbox-year{{ year }}" value="{{ year }}"
+                               name="years">
+                        <label class="form-check-label" for="checkbox-year{{ year }}">{{ year }}</label>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
+        </div>
+        <div class="col">
+            <h3>Школы:</h3>
+
+            <div class="checkbox-container d-flex flex-column" style="position: relative; padding-left: 20px">
+                {% for area in area_list %}
+                    <div>
+                        <input class="form-check-input area-checkbox" type="checkbox" checked
+                               id="checkbox-area{{ area.0 }}" value="{{ area.2 }}" name="areas">
+                        <label class="form-check-label" for="checkbox-area{{ area.0 }}">{{ area.2 }}</label>
+                        <div class="school-checkboxes">
+                            {% for school in schoolcode_list %}
+                                {% if school.6 == area.0 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input school-checkbox" type="checkbox" checked
+                                               id="checkbox-school{{ school.1 }}" value="{{ school.3 }}" name="schools"
+                                               rnb="{{ school.6 }}">
+                                        <label class="form-check-label"
+                                               for="checkbox-school{{ school.1 }}">{{ school.3 }}</label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="btn btn-secondary mt-2 select-all">Выделить все</button>
+            <button class="btn btn-secondary mt-2 deselect-all">Снять все</button>
+        </div>
+
+    </div>
+    <button id="update-graph" class="btn btn-primary btn-block mt-4">Применить</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+
+        $('.select-all').click(function () {
+        $(this).closest('.col').find('input[type="checkbox"]').not(this).prop('checked', true);
+        $('.area-checkbox').trigger('change');
+    });
+
+    $('.deselect-all').click(function () {
+        $(this).closest('.col').find('input[type="checkbox"]').not(this).prop('checked', false);
+        $('.area-checkbox').trigger('change');
+    });
+
+
+        $('.area-checkbox').change(function () {
+            var areaCheckbox = $(this);
+            var isChecked = areaCheckbox.is(':checked');
+            var areaSchools = areaCheckbox.siblings('.school-checkboxes').find('.school-checkbox');
+
+            areaSchools.each(function () {
+                $(this).prop('checked', isChecked);
+            });
+        });
+
+        $('.school-checkbox').change(function () {
+            var schoolCheckbox = $(this);
+            var areaCheckbox = schoolCheckbox.closest('.area-container').find('.area-checkbox');
+            var areaSchools = schoolCheckbox.closest('.school-checkboxes').find('.school-checkbox');
+            var allSchoolsChecked = true;
+
+            areaSchools.each(function () {
+                if (!$(this).is(':checked')) {
+                    allSchoolsChecked = false;
+                    return false;
+                }
+            });
+
+            if (areaSchools.filter(':checked').length > 0) {
+                areaCheckbox.prop('checked', true);
+            } else {
+                areaCheckbox.prop('checked', false);
+            }
+        });
+
+        $('#update-graph').click(function () {
+            var selectedSubjects = [];
+            var selectedYears = [];
+            var selectedSchools = [];
+            var selectedAreas = [];
+            $('input[name="subjects"]:checked').each(function () {
+                selectedSubjects.push(parseInt($(this).attr('id').substring(8), 10));
+            });
+
+            $('input[name="schools"]:checked').each(function () {
+                selectedSchools.push(parseInt($(this).attr('id').substring(15), 10));
+            });
+            $('input[name="areas"]:checked').each(function () {
+                selectedAreas.push(parseInt($(this).attr('id').substring(13), 10));
+            });
+
+            $('input[name="years"]:checked').each(function () {
+                selectedYears.push(parseInt($(this).val(), 10));
+            });
+            console.log(selectedAreas)
+
+
+            $.ajax({
+                url: '/update_graph5/',
+                data: {
+                    'subjects': selectedSubjects,
+                    'years': selectedYears,
+                    'schools': selectedSchools,
+                    'areas': selectedAreas,
+                },
+                dataType: 'html',
+                success: function (data) {
+                    $('#graph-img').html(data);
+                },
+                error: function () {
+                    alert('Ошибка при построении графика, выберите другие данные');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+
+
+</html>
