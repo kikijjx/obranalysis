@@ -1,7 +1,7 @@
 import pandas as pd
 import sqlalchemy as sqla
 import pathlib
-from alive_progress import alive_bar # can be removed, added just for visualization
+from alive_progress import alive_bar  # can be removed, added just for visualization
 import threading
 
 pd.options.mode.copy_on_write = True
@@ -35,8 +35,10 @@ def main():
         print('Заполнил Subject_Form_Table для %s' % f)
         set_result(base, conn, year)
         print('Заполнил Result_Table для %s' % f)
-        set_task_table(base,conn,year)
+        set_task_table(base, conn, year)
         print('Заполнил Task_Table для %s' % f)
+        set_task_result_table(base, conn, year)
+        print('Заполнил Task_Result_Table для %s' % f)
 
 
 def get_db_connection(folder):
@@ -146,32 +148,92 @@ def set_subject_form(base, conn, year):  # Я УБЬЮ СЕБЯ
 
 def set_result(base, conn, year):
     df = base[['ID', 'Предмет', 'Первичный балл', 'Процент выполнения', '100 балльная шкала']]
-    df['student_id'] = df['ID']
-    df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
-    df['result_id'] = df['subject_form_id'] + '-' + df['ID']
-    df['accuracy'] = df['Процент выполнения']
-    df['primary_score'] = df['Первичный балл']
-    df['score_100'] = df['100 балльная шкала']
+
+    df.rename(columns={'100 балльная шкала': 'score_100'}, inplace=True)
+    df.rename(columns={'ID': 'student_id'}, inplace=True)
+    df.rename(columns={'Процент выполнения': 'accuracy'}, inplace=True)
+    df.rename(columns={'Первичный балл': 'primary_score'}, inplace=True)
+
     df['result_5'] = pd.Series()
     df['result_5'] = df['score_100']
 
+    df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
     df.loc[(df.score_100 >= 85), 'result_5'] = 5
     df.loc[(df.score_100 < 85) & (df.score_100 >= 61), 'result_5'] = 4
     df.loc[(df.score_100 < 61) & (df.score_100 >= 41), 'result_5'] = 3
     df.loc[(df.score_100 < 41), 'result_5'] = 2
     df.loc[(df.Предмет == 22), 'result_5'] = df['score_100']
 
-    res = df[['result_id', 'student_id', 'subject_form_id', 'primary_score', 'accuracy', 'score_100',
+    res = df[['student_id', 'subject_form_id', 'primary_score', 'accuracy', 'score_100',
               'result_5']]
 
     res.to_sql('Result_Table', conn, if_exists='append', index=False, method=None)
 
 
 def set_task_table(base, conn, year):
-    df = base
-    df['student_id'] = df['ID']
+    df = base[['Предмет', 'Оценка кратких ответов', 'Оценка устных ответов', 'Оценка развернутых ответов',
+               '100 балльная шкала', 'Первичный балл за часть с кратким ответом']]
+
     df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
-    df['result_id'] = df['subject_form_id'] + '-' + df['ID']
+    df['A_tasks_count'] = df['Оценка кратких ответов'].str.len()
+    df['B_tasks_count'] = df['Оценка развернутых ответов'].str.len().div(4).astype('Int64')
+    df['C_tasks_count'] = df['Оценка устных ответов'].str.len().div(4).astype('Int64')
+
+    df['B_tasks_count'] = df['B_tasks_count'].fillna(0)
+    df['C_tasks_count'] = df['C_tasks_count'].fillna(0)
+
+    temp = df.sort_values(by=['Первичный балл за часть с кратким ответом', '100 балльная шкала'],
+                          ascending=[True, True]).drop_duplicates('subject_form_id', keep='last')
+
+    for i in range(len(temp)):  # проверка стобальности
+        if temp.loc[temp.index[i], '100 балльная шкала'] != 100 and temp.loc[temp.index[i], 'Предмет'] != 22:
+            print('По предмету %s нет 100 бальных результатов.' % temp.loc[temp.index[i], 'subject_form_id'])
+
+    for i in range(len(temp)):
+        tasks = pd.DataFrame(columns=['task_type', 'subject_form_id', 'max_res'])
+        subject_form_id = temp.loc[temp.index[i], 'subject_form_id']
+
+        for j in range(temp.loc[temp.index[i], 'A_tasks_count']):
+            a = [f'A{j + 1}', subject_form_id]
+
+            grade = temp.loc[temp.index[i], 'Оценка кратких ответов'][j]
+            if grade == '+':
+                a.append(1)
+            elif grade == "-":
+                a.append(0)
+                print(f'По предмету {temp.loc[temp.index[i], "subject_form_id"]} в задании {a} есть минусовая оценка.')
+            else:
+                a.append(int(grade))
+
+            tasks.loc[len(tasks)] = a
+
+        if temp.loc[temp.index[i], 'B_tasks_count']:
+            for j in range(temp.loc[temp.index[i], 'B_tasks_count']):
+                b = [f'B{j + 1}', subject_form_id]
+
+                grade = temp.loc[temp.index[i], 'Оценка развернутых ответов'][j * 4 + 2]
+                b.append(int(grade))
+
+                tasks.loc[len(tasks)] = b
+
+        if temp.loc[temp.index[i], 'C_tasks_count']:
+            for j in range(temp.loc[temp.index[i], 'C_tasks_count']):
+                c = [f'C{j + 1}', subject_form_id]
+
+                grade = temp.loc[temp.index[i], 'Оценка устных ответов'][j * 4 + 2]
+                c.append(int(grade))
+
+                tasks.loc[len(tasks)] = c
+
+        tasks.to_sql('Task_Table', conn, if_exists='append', index=False, method=None)
+
+
+def set_task_result_table(base, conn, year):
+    df = base
+
+    df.rename(columns={'ID': 'student_id'}, inplace=True)
+
+    df['subject_form_id'] = year + df.Предмет.map("{:02d}".format)
 
     df['A_tasks_count'] = df['Оценка кратких ответов'].str.len()
     df['B_tasks_count'] = df['Оценка развернутых ответов'].str.len().div(4).astype('Int64')
@@ -180,9 +242,9 @@ def set_task_table(base, conn, year):
     df['B_tasks_count'] = df['B_tasks_count'].fillna(0)
     df['C_tasks_count'] = df['C_tasks_count'].fillna(0)
 
-    def a_tasks_comp(df, tasks, result_id):
+    def a_tasks_comp(df, tasks, student_id, subject_form_id):
         for j in range(df.loc[df.index[i], 'A_tasks_count']):
-            a = [f'A{j + 1}-{result_id}', result_id]
+            a = [student_id, subject_form_id, f'A{j + 1}']
 
             grade = df.loc[df.index[i], 'Оценка кратких ответов'][j]
             if grade == '+':
@@ -194,20 +256,20 @@ def set_task_table(base, conn, year):
 
             tasks.loc[len(tasks)] = a
 
-    def b_tasks_comp(df, tasks, result_id):
+    def b_tasks_comp(df, tasks, student_id, subject_form_id):
         if df.loc[df.index[i], 'B_tasks_count']:
             for j in range(df.loc[df.index[i], 'B_tasks_count']):
-                b = [f'B{j + 1}-{result_id}', result_id]
+                b = [student_id, subject_form_id, f'B{j + 1}']
 
                 grade = df.loc[df.index[i], 'Оценка развернутых ответов'][j * 4]
                 b.append(int(grade))
 
                 tasks.loc[len(tasks)] = b
 
-    def c_tasks_comp(df, tasks, result_id):
+    def c_tasks_comp(df, tasks, student_id, subject_form_id):
         if df.loc[df.index[i], 'C_tasks_count']:
             for j in range(df.loc[df.index[i], 'C_tasks_count']):
-                c = [f'C{j + 1}-{result_id}', result_id]
+                c = [student_id, subject_form_id, f'C{j + 1}']
 
                 grade = df.loc[df.index[i], 'Оценка устных ответов'][j * 4]
                 c.append(int(grade))
@@ -216,12 +278,13 @@ def set_task_table(base, conn, year):
 
     with alive_bar(len(df)) as bar:
         for i in range(len(df)):
-            tasks = pd.DataFrame(columns=['task_id', 'result_id', 'answer'])
-            result_id = df.loc[df.index[i], "result_id"]
+            tasks = pd.DataFrame(columns=['student_id','subject_form_id', 'task_type', 'answer'])
+            student_id = df.loc[df.index[i], 'student_id']
+            subject_form_id = df.loc[df.index[i], 'subject_form_id']
 
-            thread_a = threading.Thread(target=a_tasks_comp(df, tasks, result_id))
-            thread_b = threading.Thread(target=b_tasks_comp(df, tasks, result_id))
-            thread_c = threading.Thread(target=c_tasks_comp(df, tasks, result_id))
+            thread_a = threading.Thread(target=a_tasks_comp(df, tasks, student_id, subject_form_id))
+            thread_b = threading.Thread(target=b_tasks_comp(df, tasks, student_id, subject_form_id))
+            thread_c = threading.Thread(target=c_tasks_comp(df, tasks, student_id, subject_form_id))
 
             thread_a.start()
             thread_b.start()
@@ -233,8 +296,7 @@ def set_task_table(base, conn, year):
 
             bar()
 
-            tasks.to_sql('Task_Table', conn, if_exists='append', index=False, method=None)
-
+            tasks.to_sql('Task_Result_Table', conn, if_exists='append', index=False, method=None)
 
 
 main()

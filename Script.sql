@@ -41,10 +41,10 @@ CREATE TABLE School_Table
 	school_type_id INTEGER,
 	area_id INTEGER,
 	town_type_id INTEGER,
-	FOREIGN KEY (school_kind_id) REFERENCES Scool_Kind_Table (school_kind_id),
-	FOREIGN KEY (school_type_id) REFERENCES Scool_Type_Table (school_type_id),
+	FOREIGN KEY (school_kind_id) REFERENCES School_Kind_Table (school_kind_id),
+	FOREIGN KEY (school_type_id) REFERENCES School_Type_Table (school_type_id),
 	FOREIGN KEY (area_id) REFERENCES Area_Table (area_id),
-	FOREIGN KEY (town_type_id) REFERENCES Town_Table (town_type_id)
+	FOREIGN KEY (town_type_id) REFERENCES Town_Type_Table (town_type_id)
 );
 
 CREATE TABLE School_Student_Table
@@ -68,7 +68,6 @@ CREATE TABLE Subject_Form_Table
 
 CREATE TABLE Result_Table
 (
-	result_id TEXT PRIMARY KEY,
 	student_id TEXT,
 	subject_form_id INTEGER,
 	primary_score INTEGER,
@@ -76,13 +75,26 @@ CREATE TABLE Result_Table
 	score_100 INTEGER CHECK(score_100 >= 0 and score_100 <= 100),
 	result_5 INTEGER CHECK(result_5 >= 2 and result_5 <= 5),
 	FOREIGN KEY (student_id) REFERENCES School_Student_Table (student_id),
-	FOREIGN KEY (subject_form_id) REFERENCES Subject_Form_Table (subject_form_id)
+	FOREIGN KEY (subject_form_id) REFERENCES Subject_Form_Table (subject_form_id),
+    CONSTRAINT result_id PRIMARY KEY (student_id, subject_form_id)
 );
 
 CREATE TABLE Task_Table
 (
-	task_id TEXT PRIMARY KEY,
-	result_id TEXT,
-	answer TEXT,
-	FOREIGN KEY (result_id) REFERENCES Result_Table (result_id)
+	task_type TEXT,
+    subject_form_id INTEGER,
+	max_res INTEGER,
+    FOREIGN KEY (subject_form_id) REFERENCES Subject_Form_Table (subject_form_id),
+    CONSTRAINT task_id PRIMARY KEY (task_type, subject_form_id)
+);
+
+CREATE TABLE Task_Result_Table
+(
+    student_id TEXT,
+    subject_form_id INTEGER,
+    task_type TEXT,
+	answer INTEGER,
+	FOREIGN KEY (student_id, subject_form_id) REFERENCES Result_Table (student_id, subject_form_id),
+    FOREIGN KEY (task_type, subject_form_id) REFERENCES Task_Table (task_type, subject_form_id),
+    CONSTRAINT task_result_id PRIMARY KEY (student_id, subject_form_id, task_type)
 );
