@@ -26,9 +26,7 @@ def average_subject_result_show(years, params, schools):
 
     fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Баллы', showlegend=True)
 
-    graph_data = fig.to_html(full_html=False)
-
-    return graph_data
+    return fig
 
 
 #Лучшие баллы в школах по предметам
@@ -108,8 +106,7 @@ def show_participant_count(years, params, schools):
         text = df_filtered['Количество'].apply(lambda x: str(x))
         fig.add_trace(go.Bar(x=df_filtered['Предмет'], y=df_filtered['Количество'], text=text, textposition='auto', name=str(years[i])))
     fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Количество участников', showlegend=True)
-    graph_data = fig.to_html(full_html=False)
-    return graph_data
+    return fig
 
 def average_district_result_show(subject_id, years, areas):
     data_frames = []

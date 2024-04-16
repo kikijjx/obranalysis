@@ -71,7 +71,7 @@ def update_graph1(request):
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_schools = request.GET.getlist('schools[]')
     selected_areas = request.GET.getlist('areas[]')
-    graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects, selected_schools)
+    graph_data = diagram_funcs.average_subject_result_show(selected_years, selected_subjects, selected_schools).to_html(full_html=False)
     return HttpResponse(graph_data)
 
 def update_graph2(request):
@@ -105,7 +105,7 @@ def update_graph5(request):
     selected_subjects = list(map(int, request.GET.getlist('subjects[]')))
     selected_schools = request.GET.getlist('schools[]')
     selected_areas = request.GET.getlist('areas[]')
-    graph_data = diagram_funcs.show_participant_count(selected_years, selected_subjects, selected_schools)
+    graph_data = diagram_funcs.show_participant_count(selected_years, selected_subjects, selected_schools).to_html(full_html=False)
     return HttpResponse(graph_data)
 
 def update_graph6(request):
