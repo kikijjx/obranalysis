@@ -166,6 +166,21 @@ def get_average_subject_result(year, school_codes):
         result = cursor.fetchall()
         return result
 
+def get_average_subject_result_press_release(year):
+    with sq3.connect(db_path) as con:
+        cursor = con.cursor()
+        cursor.execute(
+            "SELECT st.subject_id, st.subject_name, AVG(rt.score_100) AS average_results "
+            "FROM Subject_Form_Table sft "
+            "LEFT JOIN Result_Table rt ON sft.subject_form_id = rt.subject_form_id "
+            "INNER JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+            "LEFT JOIN School_Student_Table sst ON rt.student_id = sst.student_id "
+            "LEFT JOIN School_Table st2 ON sst.school_code = st2.school_CODE "
+            f"WHERE sft.year_of_exam = {year} "
+            "GROUP BY sft.subject_form_id;")
+        result = cursor.fetchall()
+        return result
+
 
 #Средние баллы ЕГЭ по школам отсортированы по убыванию баллов 100 бальной шкалы (без базовой математики)
 def get_average_school_result_100(year):
@@ -321,6 +336,20 @@ def get_participant_count_by_subject_year(year, schools):
                        "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
                        f"WHERE sft.year_of_exam = {year} AND st2.school_CODE IN ({school_codes_str}) "
                        "GROUP BY sft.subject_id;", schools)
+        result = cursor.fetchall()
+        return result
+
+def get_participant_count_by_subject_year_press_release(year):
+    with sq3.connect(db_path) as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT sft.subject_id AS 'Индекс', st.subject_name AS 'Предмет', COUNT(DISTINCT rt.student_id) AS 'Количество' "
+                       "FROM Result_Table rt "
+                       "LEFT JOIN Subject_Form_Table sft ON rt.subject_form_id = sft.subject_form_id "
+                       "LEFT JOIN School_Student_Table sst ON rt.student_id = sst.student_id "
+                       "LEFT JOIN School_Table st2 ON sst.school_code = st2.school_CODE "
+                       "LEFT JOIN Subject_Table st ON sft.subject_id = st.subject_id "
+                       f"WHERE sft.year_of_exam = {year} "
+                       "GROUP BY sft.subject_id;")
         result = cursor.fetchall()
         return result
 
