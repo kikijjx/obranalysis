@@ -1,6 +1,8 @@
 import diagrams
 from docx import Document
 from docx.shared import Inches
+
+import functions
 import functions as loading
 import pandas as pd
 
@@ -88,8 +90,8 @@ def main():
 
     texts_data = texts(year, result_table, subject_table)
 
-    fig2 = diagrams.show_participant_count([year - 1, year])
-    fig1 = diagrams.average_subject_result_show([year - 1, year])
+    fig2 = diagrams.show_participant_count([year - 1, year], functions.get_school_CODE_list())
+    fig1 = diagrams.average_subject_result_show([year - 1, year], functions.get_school_CODE_list())
     image_fig1 = fig1.to_image(format="png")
     image_fig2 = fig2.to_image(format="png")
 
