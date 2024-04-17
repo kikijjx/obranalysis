@@ -6,10 +6,10 @@ import plotly.express as px
 
 # Средние баллы по предметам
 
-def average_subject_result_show(years):
+def average_subject_result_show(years, school_CODEs):
     data_frames = []
     for year in years:
-        data_frames.append(pd.DataFrame(functions.get_average_subject_result(year), columns=['Индекс', 'Предмет', 'Баллы']))
+        data_frames.append(pd.DataFrame(functions.get_average_subject_result(year, school_CODEs), columns=['Индекс', 'Предмет', 'Баллы']))
 
     fig = go.Figure()
 
@@ -40,10 +40,10 @@ def average_subject_task_type_accuracy_show(task_types, years):
 
     return fig
 
-def show_participant_count(years):
+def show_participant_count(years, school_CODEs):
     data_frames = []
     for year in years:
-        data = functions.get_participant_count_by_subject_year(year)
+        data = functions.get_participant_count_by_subject_year(year, school_CODEs)
         data_frames.append(pd.DataFrame(data, columns=['Индекс', 'Предмет', 'Количество']))
     fig = go.Figure()
     for i, df in enumerate(data_frames):

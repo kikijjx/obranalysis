@@ -354,6 +354,6 @@ def get_school_CODE_list():
 def get_subject_list():
     with sq3.connect(db_path) as con:
         cursor = con.cursor()
-        cursor.execute("SELECT  FROM Subject_Table")
+        cursor.execute("SELECT subject_id FROM Subject_Table")
         result = cursor.fetchall()
         return result
