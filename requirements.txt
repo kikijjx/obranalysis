@@ -2,3 +2,6 @@ pandas~=2.2.1
 SQLAlchemy~=2.0.28
 matplotlib~=3.8.3
 Django~=5.0.2
+plotly~=5.20.0
+tenacity~=8.2.3
+python-docx~=1.1.0
