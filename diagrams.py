@@ -1,143 +1,53 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import functions
-import io
-import base64
+import plotly.graph_objs as go
+import plotly.express as px
 
-#Средние баллы по предметам
+# Средние баллы по предметам
 
-df_2018 = pd.DataFrame(functions.get_average_subject_result(2018),columns=['Индекс','Предмет','Баллы'])
-df_2019 = pd.DataFrame(functions.get_average_subject_result(2019),columns=['Индекс','Предмет','Баллы'])
-df_2020 = pd.DataFrame(functions.get_average_subject_result(2020),columns=['Индекс','Предмет','Баллы'])
-df_2021 = pd.DataFrame(functions.get_average_subject_result(2021),columns=['Индекс','Предмет','Баллы'])
-df_2022 = pd.DataFrame(functions.get_average_subject_result(2022),columns=['Индекс','Предмет','Баллы'])
+def average_subject_result_show(years):
+    data_frames = []
+    for year in years:
+        data_frames.append(pd.DataFrame(functions.get_average_subject_result(year), columns=['Индекс', 'Предмет', 'Баллы']))
 
-bar_width = 0.17
+    fig = go.Figure()
 
-plt.bar(df_2018["Индекс"], df_2018["Баллы"], bar_width, color='yellow', label='2018')
-plt.bar([i + bar_width for i in df_2019["Индекс"]], df_2019["Баллы"], bar_width, color='green', label='2019')
-plt.bar([i + 2*bar_width for i in df_2020["Индекс"]], df_2020["Баллы"], bar_width, color='blue', label='2020')
-plt.bar([i + 3*bar_width for i in df_2021["Индекс"]], df_2021["Баллы"], bar_width, color='red', label='2021')
-plt.bar([i + 4*bar_width for i in df_2022["Индекс"]], df_2022["Баллы"], bar_width, color='orange', label='2022')
+    for i, df in enumerate(data_frames):
+        fig.add_trace(go.Bar(x=df['Предмет'], y=df['Баллы'], text=df['Баллы'].apply(lambda x: str(round(x, 1))), textposition='auto', name=str(years[i])))
 
-plt.xlabel('Предметы')
-plt.ylabel('Баллы')
-plt.title('Средний балл по предмету')
-plt.xticks(df_2018["Индекс"], df_2018["Предмет"], rotation=45)
-plt.xticks([i + bar_width for i in df_2019["Индекс"]], df_2019["Предмет"], rotation=45)
-plt.xticks([i + 2*bar_width for i in df_2020["Индекс"]], df_2020["Предмет"], rotation=45)
-plt.xticks([i + 3*bar_width for i in df_2021["Индекс"]], df_2021["Предмет"], rotation=45)
-plt.xticks([i + 4*bar_width for i in df_2022["Индекс"]], df_2022["Предмет"], rotation=45)
+    fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Баллы', showlegend=True)
 
-for i, value in enumerate(df_2018["Баллы"]):
-    plt.text(df_2018["Индекс"][i], value, str(round(value, 1)), ha='center', va='bottom')
+    return fig
 
-for i, value in enumerate(df_2019["Баллы"]):
-    plt.text(df_2019["Индекс"][i] + bar_width, value, str(round(value, 1)), ha='center', va='bottom')
+def average_subject_task_type_accuracy_show(task_types, years):
+    fig = go.Figure()
+    for type in task_types:
+        data_frames = []
+        for year in years:
+            data_frames.append(pd.DataFrame(functions.get_task_type_accuracy(type, year),
+                                            columns=['Индекс', 'Предмет', 'Год', 'Тип', 'Процент']))
+        year_count = 0
+        for i, df in enumerate(data_frames):
+            # df_filtered = df['Индекс']
+            # df_filtered = df_filtered.reset_index(drop=True)
 
-for i, value in enumerate(df_2020["Баллы"]):
-    plt.text(df_2020["Индекс"][i] + 2*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
+            year = [2018, 2019, 2020, 2021, 2022]
+            fig.add_trace(go.Bar(x=[df['Предмет'],df['Год']], y=df['Процент'],
+                             text=df['Процент'].apply(lambda x: str(round(x, 1))), textposition='auto', name=f'{year[year_count]}:{type}'))
+            year_count+=1
+        fig.update_layout(barmode='stack', xaxis_title='Предметы', yaxis_title='Проценты', showlegend=True)
 
-for i, value in enumerate(df_2021["Баллы"]):
-    plt.text(df_2021["Индекс"][i] + 3*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
+    return fig
 
-for i, value in enumerate(df_2022["Баллы"]):
-    plt.text(df_2022["Индекс"][i] + 4*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-plt.legend()
-plt.figure()
-
-#Лучшие баллы в школах по предметам
-
-df_2018 = pd.DataFrame(functions.get_average_best_subject_school_result(2018),columns=['Индекс','Школа','Предмет','Баллы'])
-df_2019 = pd.DataFrame(functions.get_average_best_subject_school_result(2019),columns=['Индекс','Школа','Предмет','Баллы'])
-df_2020 = pd.DataFrame(functions.get_average_best_subject_school_result(2020),columns=['Индекс','Школа','Предмет','Баллы'])
-df_2021 = pd.DataFrame(functions.get_average_best_subject_school_result(2021),columns=['Индекс','Школа','Предмет','Баллы'])
-df_2022 = pd.DataFrame(functions.get_average_best_subject_school_result(2022),columns=['Индекс','Школа','Предмет','Баллы'])
-
-bar_width = 0.18
-
-plt.bar(df_2018["Индекс"], df_2018["Баллы"], bar_width, color='yellow', label='2018')
-plt.bar([i + bar_width for i in df_2019["Индекс"]], df_2019["Баллы"], bar_width, color='green', label='2019')
-plt.bar([i + 2*bar_width for i in df_2020["Индекс"]], df_2020["Баллы"], bar_width, color='blue', label='2020')
-plt.bar([i + 3*bar_width for i in df_2021["Индекс"]], df_2021["Баллы"], bar_width, color='red', label='2021')
-plt.bar([i + 4*bar_width for i in df_2022["Индекс"]], df_2022["Баллы"], bar_width, color='orange', label='2022')
-
-plt.ylabel('Баллы')
-plt.title('Школы с лучшим средним баллом по предмету')
-plt.xticks(df_2018["Индекс"], df_2018["Предмет"], rotation=45)
-plt.xticks([i + bar_width for i in df_2019["Индекс"]], df_2019["Предмет"], rotation=45)
-plt.xticks([i + 2*bar_width for i in df_2020["Индекс"]], df_2020["Предмет"], rotation=45)
-plt.xticks([i + 3*bar_width for i in df_2021["Индекс"]], df_2021["Предмет"], rotation=45)
-plt.xticks([i + 4*bar_width for i in df_2022["Индекс"]], df_2022["Предмет"], rotation=45)
-
-
-for i, value in enumerate(df_2018["Баллы"]):
-    plt.text(df_2018["Индекс"][i], value, str(round(value, 1)), ha='center', va='bottom')
-
-for i, value in enumerate(df_2019["Баллы"]):
-    plt.text(df_2019["Индекс"][i] + bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-for i, value in enumerate(df_2020["Баллы"]):
-    plt.text(df_2020["Индекс"][i] + 2*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-for i, value in enumerate(df_2021["Баллы"]):
-    plt.text(df_2021["Индекс"][i] + 3*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-for i, value in enumerate(df_2022["Баллы"]):
-    plt.text(df_2022["Индекс"][i] + 4*bar_width, value, str(round(value, 1)), ha='center', va='bottom')
-
-
-for i, school in enumerate(df_2018["Школа"]):
-    plt.text(df_2018["Индекс"][i], i, school, ha='center', va='bottom', rotation=90)
-
-for i, school in enumerate(df_2019["Школа"]):
-    plt.text(df_2019["Индекс"][i] + bar_width, i, school, ha='center', va='bottom', rotation=90)
-
-for i, school in enumerate(df_2020["Школа"]):
-    plt.text(df_2020["Индекс"][i] + 2*bar_width, i, school, ha='center', va='bottom', rotation=90)
-
-for i, school in enumerate(df_2021["Школа"]):
-    plt.text(df_2021["Индекс"][i] + 3*bar_width, i, school, ha='center', va='bottom', rotation=90)
-
-for i, school in enumerate(df_2022["Школа"]):
-    plt.text(df_2022["Индекс"][i] + 4*bar_width, i, school, ha='center', va='bottom', rotation=90)
-
-
-def show_subject_performance(subject_name):
-    df_2018 = pd.DataFrame(functions.get_average_subject_accuracy(2018),
-                           columns=['Индекс', 'Предмет', 'Процент выполнения'])
-    df_2019 = pd.DataFrame(functions.get_average_subject_accuracy(2019),
-                           columns=['Индекс', 'Предмет', 'Процент выполнения'])
-    df_2020 = pd.DataFrame(functions.get_average_subject_accuracy(2020),
-                           columns=['Индекс', 'Предмет', 'Процент выполнения'])
-    df_2021 = pd.DataFrame(functions.get_average_subject_accuracy(2021),
-                           columns=['Индекс', 'Предмет', 'Процент выполнения'])
-    df_2022 = pd.DataFrame(functions.get_average_subject_accuracy(2022),
-                           columns=['Индекс', 'Предмет', 'Процент выполнения'])
-
-    percentages = [df_2018[df_2018['Предмет'].str.contains(subject_name)]['Процент выполнения'].values[0],
-                   df_2019[df_2019['Предмет'].str.contains(subject_name)]['Процент выполнения'].values[0],
-                   df_2020[df_2020['Предмет'].str.contains(subject_name)]['Процент выполнения'].values[0],
-                   df_2021[df_2021['Предмет'].str.contains(subject_name)]['Процент выполнения'].values[0],
-                   df_2022[df_2022['Предмет'].str.contains(subject_name)]['Процент выполнения'].values[0]]
-
-    years = ['2018', '2019', '2020', '2021', '2022']
-    fig, axs = plt.subplots(1, 5, figsize=(20, 5))
-    for i in range(5):
-        axs[i].pie([percentages[i], 100 - percentages[i]],
-                   labels=[f'Выполнено:', 'Не выполнено'], autopct='%1.1f%%', startangle=0)
-        axs[i].axis('equal')
-        axs[i].set_title(f'{subject_name}: {years[i]}')
-
-    plt.show()
-
-
-# Запрос пользователю ввести название предмета
-subject_name = input("Введите название предмета: ")
-
-# Отображение 5 круговых диаграмм с процентом выполнения по предмету на каждый из годов
-show_subject_performance(subject_name)
-
-
-
+def show_participant_count(years):
+    data_frames = []
+    for year in years:
+        data = functions.get_participant_count_by_subject_year(year)
+        data_frames.append(pd.DataFrame(data, columns=['Индекс', 'Предмет', 'Количество']))
+    fig = go.Figure()
+    for i, df in enumerate(data_frames):
+        text = df['Количество'].apply(lambda x: str(x))
+        fig.add_trace(go.Bar(x=df['Предмет'], y=df['Количество'], text=text, textposition='auto', name=str(years[i])))
+    fig.update_layout(barmode='group', xaxis_title='Предметы', yaxis_title='Количество участников', showlegend=True)
+    return fig
