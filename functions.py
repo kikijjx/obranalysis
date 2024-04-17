@@ -344,3 +344,16 @@ def get_average_district_result(subject_id, years, area_codes):
         result = cursor.fetchall()
         return result
 
+def get_school_CODE_list():
+    with sq3.connect(db_path) as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT school_CODE FROM School_Table")
+        result = cursor.fetchall()
+        return result
+
+def get_subject_list():
+    with sq3.connect(db_path) as con:
+        cursor = con.cursor()
+        cursor.execute("SELECT  FROM Subject_Table")
+        result = cursor.fetchall()
+        return result
