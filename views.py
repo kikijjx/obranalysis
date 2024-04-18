@@ -1,5 +1,6 @@
 import pandas as pd
 import diagram_funcs
+import press_release_gen
 from django.shortcuts import render
 from django.http import HttpResponse
 import matplotlib
@@ -8,7 +9,6 @@ import functions
 from string import Template
 
 matplotlib.use('Agg')
-
 
 def main(request):
     return render(request, 'main.html')
@@ -52,19 +52,24 @@ def load_template(request):
         return render(request, 'sorry.html')
 
 def generate_press_release(request):
-    data1 = 2
-    data2 = 75
-    data3 = 5
-    with open('pressreleasetemplate.txt', 'r', encoding='utf-8') as file:
-        template = Template(file.read())
-    press_release = template.substitute(
-        data1=data1,
-        data2=data2,
-        data3=data3,
-    )
-    with open('pressrelease.txt', 'w', encoding='utf-8') as file:
-        file.write(press_release)
-    return HttpResponse(press_release, content_type='text/plain')
+    with open(press_release_gen.generator(2020), 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = f'attachment; filename={press_release_gen.generator(2020)}'
+        return response
+# def generate_press_release(request):
+#     data1 = 2
+#     data2 = 75
+#     data3 = 5
+#     with open('pressreleasetemplate.txt', 'r', encoding='utf-8') as file:
+#         template = Template(file.read())
+#     press_release = template.substitute(
+#         data1=data1,
+#         data2=data2,
+#         data3=data3,
+#     )
+#     with open('pressrelease.txt', 'w', encoding='utf-8') as file:
+#         file.write(press_release)
+#     return HttpResponse(press_release, content_type='text/plain')
 
 def update_graph1(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))

@@ -25,7 +25,7 @@
         <option value="template5">Количество участников</option>
 
     </select>
-    <!-- <button id="generate-press-release-btn" type="button" class="btn btn-primary ml-2">Составить пресс-релиз</button> -->
+     <button id="generate-press-release-btn" type="button" class="btn btn-primary ml-2">Составить пресс-релиз</button>
 </div>
 <div id="content"></div>
 
@@ -56,19 +56,23 @@
             }
         });
 
+<!--        $('#generate-press-release-btn').click(function () {-->
+<!--            $.ajax({-->
+<!--                url: '/generate_press_release/',-->
+<!--                dataType: 'text',-->
+<!--                success: function (data) {-->
+<!--                    data = data.replace(/\n/g, '<br>');-->
+<!--                    var pressReleaseWindow = window.open('', '_blank');-->
+<!--                    pressReleaseWindow.document.write(data);-->
+<!--                },-->
+<!--                error: function () {-->
+<!--                    alert('Ошибка при составлении пресс-релиза');-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+
         $('#generate-press-release-btn').click(function () {
-            $.ajax({
-                url: '/generate_press_release/',
-                dataType: 'text',
-                success: function (data) {
-                    data = data.replace(/\n/g, '<br>');
-                    var pressReleaseWindow = window.open('', '_blank');
-                    pressReleaseWindow.document.write(data);
-                },
-                error: function () {
-                    alert('Ошибка при составлении пресс-релиза');
-                }
-            });
+            window.location.href = '{% url "generate_press_release" %}';
         });
     });
 </script>
