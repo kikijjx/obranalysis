@@ -66,7 +66,7 @@ def texts(year, result_table, subject_table):
 
     f2 = f'''
     Результаты ЕГЭ {year} года оказались {subj_grade}, чем в прошлом году. Процент не справившихся с экзаменационными заданиями
-    составил {fail_percentage}% от общего числа участников средних образовательных учреждений, что на {abs(fail_percentage - fail_percentage_prev)}% больше чем в прошлом году.
+    составил {round(fail_percentage,2)}% от общего числа участников средних образовательных учреждений, что на {round(abs(fail_percentage - fail_percentage_prev),2)}% больше чем в прошлом году.
     В {year} году русский язык в форме ЕГЭ не сдали {russian_fail_count} учащихся средних образовательных учреждений ({russian_fail_count_prev} в {year - 1} году).
     По математике достаточного для зачета баллов не набрали {math_fail_count} учеников средних общеобразовательных учреждений ({math_fail_count_prev} в {year - 1} году).
     Зато количество 100 - балльных работ возросло по сравнению с {year - 1} годом ({hundred_grade_cnt_prev} человек). Так в {year} году в Тюменской области
@@ -101,7 +101,7 @@ def generator(year):
     y_values = trace.y
     data_dict = {"X data": x_values, "Y data": y_values}
     for subject, score in zip(data_dict['X data'], data_dict['Y data']):
-        text_fig += f"{subject} имеет средний балл - {score}\n"
+        text_fig += f"{subject} имеет средний балл - {round(score,2)}\n"
 
     with open('average_subject_result.png', 'wb') as img_file:
         img_file.write(image_fig1)
