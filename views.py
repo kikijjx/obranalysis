@@ -11,7 +11,10 @@ from string import Template
 matplotlib.use('Agg')
 
 def main(request):
-    return render(request, 'main.html')
+    years_list = sorted(functions.get_actual_years(), key=lambda x: x)
+    if years_list:
+        years_list = years_list[1:]
+    return render(request, 'main.html', {'years_list': years_list})
 
 
 def load_template(request):
@@ -52,24 +55,15 @@ def load_template(request):
         return render(request, 'sorry.html')
 
 def generate_press_release(request):
-    with open(press_release_gen.generator(2020), 'rb') as file:
-        response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        response['Content-Disposition'] = f'attachment; filename={press_release_gen.generator(2020)}'
-        return response
-# def generate_press_release(request):
-#     data1 = 2
-#     data2 = 75
-#     data3 = 5
-#     with open('pressreleasetemplate.txt', 'r', encoding='utf-8') as file:
-#         template = Template(file.read())
-#     press_release = template.substitute(
-#         data1=data1,
-#         data2=data2,
-#         data3=data3,
-#     )
-#     with open('pressrelease.txt', 'w', encoding='utf-8') as file:
-#         file.write(press_release)
-#     return HttpResponse(press_release, content_type='text/plain')
+    selected_year = request.GET.get('year')
+    if selected_year:
+        with open(press_release_gen.generator(int(selected_year)), 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            response['Content-Disposition'] = f'attachment; filename=press_release_{selected_year}.docx'
+            return response
+    else:
+        return HttpResponse("Не выбран год", status=400)
+
 
 def update_graph1(request):
     selected_years = list(map(int, request.GET.getlist('years[]')))

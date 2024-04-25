@@ -14,8 +14,10 @@
     </style>
 </head>
 <body>
-<div class="container d-flex justify-content-between mb-3">
-    <select id="templates-select">
+<div class="container">
+  <div class="row align-items-center mb-3">
+    <div class="col-md-4">
+      <select id="templates-select" class="form-control">
         <option value="">Выберите шаблон...</option>
         <option value="template1">Средний балл</option>
         <option value="template6">Средний балл по районам</option>
@@ -23,10 +25,19 @@
         <option value="template3">Средний процент выполнения заданий</option>
         <!-- <option value="template4">Процент выполнения определённой части заданий</option> -->
         <option value="template5">Количество участников</option>
-
-    </select>
-     <button id="generate-press-release-btn" type="button" class="btn btn-primary ml-2">Составить пресс-релиз</button>
+      </select>
+    </div>
+    <div class="col-md-8 d-flex justify-content-end align-items-center">
+      <select id="year-select" class="form-control mr-2" style="width: 100px;">
+        {% for year in years_list %}
+        <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+      </select>
+      <button id="generate-press-release-btn" type="button" class="btn btn-primary">Составить пресс-релиз</button>
+    </div>
+  </div>
 </div>
+
 <div id="content"></div>
 
 <script>
@@ -56,24 +67,16 @@
             }
         });
 
-<!--        $('#generate-press-release-btn').click(function () {-->
-<!--            $.ajax({-->
-<!--                url: '/generate_press_release/',-->
-<!--                dataType: 'text',-->
-<!--                success: function (data) {-->
-<!--                    data = data.replace(/\n/g, '<br>');-->
-<!--                    var pressReleaseWindow = window.open('', '_blank');-->
-<!--                    pressReleaseWindow.document.write(data);-->
-<!--                },-->
-<!--                error: function () {-->
-<!--                    alert('Ошибка при составлении пресс-релиза');-->
-<!--                }-->
-<!--            });-->
-<!--        });-->
+
 
         $('#generate-press-release-btn').click(function () {
-            window.location.href = '{% url "generate_press_release" %}';
-        });
+        var selectedYear = $('#year-select').val();
+        if (selectedYear) {
+            window.location.href = '{% url "generate_press_release" %}?year=' + selectedYear;
+        } else {
+            alert('Пожалуйста, выберите год.');
+        }
+    });
     });
 </script>
 
