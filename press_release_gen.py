@@ -52,8 +52,8 @@ def texts(year, result_table, subject_table):
 
     students_on_three = len(temp.student_id.value_counts().loc[lambda x: x >= 3])
     students_on_three_prev = len(temp_prev.student_id.value_counts().loc[lambda x: x >= 3])
-    print(students_on_three)
-    print(students_on_three_prev)
+    #print(students_on_three)
+    #print(students_on_three_prev)
     if students_on_three - students_on_three_prev > 0:
         subj_grade_of_stud_cnt_on_three = 'Увеличилась'
     else:
